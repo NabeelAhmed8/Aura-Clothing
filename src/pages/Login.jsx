@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema } from '../schemas/authSchema';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
 
@@ -58,12 +58,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen w-full bg-[#F9F9F8] flex flex-col justify-start mt-4 pb-4 px-6 space-y-3">
-      <div className="w-full max-w-md mx-auto">
-        <Link to="/" className="inline-flex items-center space-x-2 text-xs uppercase tracking-widest text-neutral-600 hover:text-neutral-900 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Home</span>
-        </Link>
-      </div>
 
       <div className="w-full max-w-md mx-auto bg-white p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6">
         <div className="text-center space-y-2">
@@ -111,7 +105,9 @@ export default function Login() {
               />
               <button 
                 type="button" 
-                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
