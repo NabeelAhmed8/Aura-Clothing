@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useCartStore } from './store/useCartStore';
 
 // Pages
@@ -42,7 +42,7 @@ export default function App() {
   }, []);
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       {/* Scroll fix on route change */}
       <ScrollToTop />
 
@@ -76,6 +76,6 @@ export default function App() {
 
       {/* Floating Buttons & Footer */}
       <BackToHomeButton />
-    </BrowserRouter>
+    </HashRouter>
   );
 }
