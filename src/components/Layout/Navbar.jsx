@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Search, User, Menu, X } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const cart = useCartStore((state) => state.cart) || [];
   const toggleCart = useCartStore((state) => state.toggleCart);
   const user = useCartStore((state) => state.user);
@@ -35,8 +36,9 @@ export default function Navbar() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      alert(`Searching for: ${searchQuery}`);
+    const cleanQuery = searchQuery.trim();
+    if (cleanQuery) {
+      navigate(`/shop?search=${encodeURIComponent(cleanQuery)}`);
       setIsSearchOpen(false);
       setSearchQuery('');
     }

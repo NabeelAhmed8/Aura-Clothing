@@ -20,15 +20,16 @@ export default function Shop() {
   const shopHeaderRef = useRef(null);
 
   const selectedCategory = searchParams.get('category') || 'All';
+  const searchQuery = searchParams.get('search') || '';
 
-  // Jab bhi category change ho, page smooth tarike se uper "THE SHOP" title par scroll ho
+  // Jab bhi category ya search query change ho, smooth scroll to top
   useEffect(() => {
     window.scrollTo({
       top: 0,
       left: 0,
       behavior: 'smooth'
     });
-  }, [selectedCategory]);
+  }, [selectedCategory, searchQuery]);
 
   const fetchProducts = () => {
     setLoading(true);
@@ -105,9 +106,19 @@ export default function Shop() {
     setSearchParams(nextParams);
   };
 
-  const filteredProducts = selectedCategory === 'All' 
-    ? products 
-    : products.filter(p => p.category.toLowerCase() === selectedCategory.toLowerCase());
+  const filteredProducts = products.filter((p) => {
+    const matchesCategory =
+      selectedCategory.toLowerCase() === 'all' ||
+      p.category?.toLowerCase() === selectedCategory.toLowerCase();
+
+    const matchesSearch =
+      !searchQuery ||
+      p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.category?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="-mt-4 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
@@ -122,7 +133,7 @@ export default function Shop() {
         </div>
 
         {/* Category Filters */}
-        <div role="tablist" aria-label="Product categories" className="flex flex-wrap justify-center items-center gap-6 sm:space-x-8 mb-12 text-xs uppercase tracking-widest font-medium">
+        <div role="tablist" aria-label="Product categories" className="flex flex-wrap justify-center items-center gap-6 sm:space-x-8 mb-8 text-xs uppercase tracking-widest font-medium">
           {['All', 'Women', 'Men', 'Accessories'].map((cat) => {
             const isActive = selectedCategory.toLowerCase() === cat.toLowerCase();
             return (
@@ -143,6 +154,26 @@ export default function Shop() {
             );
           })}
         </div>
+
+        {/* Active Search Filter Banner */}
+        {searchQuery && (
+          <div className="flex items-center justify-center gap-2 mb-10 text-xs text-neutral-600 bg-neutral-100 py-2.5 px-4 rounded-xs max-w-md mx-auto border border-neutral-200">
+            <span>Searching: <strong className="text-neutral-900">"{searchQuery}"</strong></span>
+            <span className="text-neutral-400">•</span>
+            <span>{filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'items'} found</span>
+            <button
+              type="button"
+              onClick={() => {
+                const nextParams = new URLSearchParams(searchParams);
+                nextParams.delete('search');
+                setSearchParams(nextParams);
+              }}
+              className="text-neutral-900 underline font-bold hover:text-neutral-600 cursor-pointer ml-2"
+            >
+              Clear
+            </button>
+          </div>
+        )}
 
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3.5">

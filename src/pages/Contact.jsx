@@ -64,7 +64,7 @@ export default function Contact() {
       }
     } catch (err) {
       console.error('Error submitting contact form:', err);
-      showToast('Connection error. Ensure backend server is running on port 5000.');
+      showToast('Connection error. Ensure backend server is running on port 5001.');
     } finally {
       setIsSubmitting(false);
     }

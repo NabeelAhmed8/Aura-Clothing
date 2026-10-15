@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCartStore } from '../../store/useCartStore';
 import { Link, useLocation } from 'react-router-dom';
+import { API_BASE_URL } from '../../config/api';
 
 export default function Footer() {
   const [email, setEmail] = useState('');
@@ -41,7 +42,7 @@ export default function Footer() {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/newsletter/subscribe', {
+      const res = await fetch(`${API_BASE_URL}/api/newsletter/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

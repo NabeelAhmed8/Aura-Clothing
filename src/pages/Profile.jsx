@@ -23,6 +23,7 @@ export default function Profile() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   // Orders State (Linked with Checkout backend)
   const [orders, setOrders] = useState([]);
@@ -466,17 +467,44 @@ export default function Profile() {
 
   const handleChangePasswordSubmit = async (e) => {
     e.preventDefault();
+    if (!passwordData.currentPassword) {
+      showToast('Please enter your current password');
+      return;
+    }
+    if (passwordData.newPassword.length < 6) {
+      showToast('New password must be at least 6 characters');
+      return;
+    }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       showToast('New passwords do not match');
       return;
     }
 
+    setIsUpdatingPassword(true);
     try {
-      setShowPasswordModal(false);
-      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      showToast('Password changed successfully!');
-    } catch {
-      showToast('Failed to change password');
+      const res = await fetch(`${API_BASE_URL}/api/auth/change-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: user.email,
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setShowPasswordModal(false);
+        setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+        showToast('Password updated successfully in database!');
+      } else {
+        showToast(data.error || data.message || 'Failed to update password');
+      }
+    } catch (err) {
+      console.error('Password change error:', err);
+      showToast('Server connection error. Please ensure backend is running.');
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -509,15 +537,23 @@ export default function Profile() {
         {/* Sidebar Tabs */}
         <div className="bg-neutral-50 border-r border-neutral-200 p-6 flex flex-col justify-between space-y-6 w-full">
           <div className="space-y-6">
-            <div className="flex items-center space-x-3 pb-6 border-b border-neutral-200">
-              <div className="w-10 h-10 bg-neutral-900 text-white rounded-full flex items-center justify-center font-bold text-xs uppercase">
-                {user.firstName ? user.firstName[0] : (user.email ? user.email[0] : 'U')}
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-xs font-bold uppercase tracking-wider text-neutral-900 truncate">
+            <div className="flex items-center space-x-3 pb-6 border-b border-neutral-200 text-left">
+              {user.profilePicture ? (
+                <img 
+                  src={user.profilePicture} 
+                  alt="Profile" 
+                  className="w-10 h-10 rounded-full object-cover shrink-0" 
+                />
+              ) : (
+                <div className="w-10 h-10 bg-neutral-900 text-white rounded-full flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                  {user.firstName ? user.firstName[0] : (user.email ? user.email[0] : 'U')}
+                </div>
+              )}
+              <div className="overflow-hidden text-left flex-1 min-w-0">
+                <p className="text-xs font-bold uppercase tracking-wider text-neutral-900 truncate text-left">
                   {user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : (user.name || 'AURA Member')}
                 </p>
-                <p className="text-[10px] text-neutral-500 truncate">{user.email}</p>
+                <p className="text-[10px] text-neutral-500 truncate text-left">{user.email}</p>
               </div>
             </div>
 
@@ -1133,8 +1169,12 @@ export default function Profile() {
                 <label className="text-[10px] uppercase tracking-widest text-neutral-700 font-medium">Confirm New Password</label>
                 <input type="password" name="confirmPassword" required value={passwordData.confirmPassword} onChange={handlePasswordChangeInput} placeholder="••••••••" className="w-full bg-neutral-50 border border-neutral-300 px-4 py-3 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900" />
               </div>
-              <button type="submit" className="w-full bg-neutral-900 text-white py-3.5 sm:py-4 px-6 min-h-11 text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer flex items-center justify-center text-center">
-                Update Password
+              <button 
+                type="submit" 
+                disabled={isUpdatingPassword}
+                className="w-full bg-neutral-900 text-white py-3.5 sm:py-4 px-6 min-h-11 text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center text-center"
+              >
+                {isUpdatingPassword ? 'Updating Password...' : 'Update Password'}
               </button>
             </form>
           </div>

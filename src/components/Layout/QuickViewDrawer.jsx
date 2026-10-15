@@ -12,10 +12,12 @@ import {
   Truck, 
   RotateCcw, 
   Sparkles,
-  Send
+  Send,
+  Ruler
 } from 'lucide-react';
 import { useQuickViewStore } from '../../store/useQuickViewStore';
 import { useCartStore } from '../../store/useCartStore';
+import { API_BASE_URL } from '../../config/api';
 
 const COLOR_SWATCHES = [
   { name: 'Onyx Black', hex: '#18181b', ring: 'ring-neutral-900' },
@@ -38,30 +40,47 @@ export default function QuickViewDrawer() {
   const [selectedColor, setSelectedColor] = useState(COLOR_SWATCHES[0].name);
   const [quantity, setQuantity] = useState(1);
   const [openAccordion, setOpenAccordion] = useState(null); // 'care' | 'shipping' | 'reviews' | null
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
 
-  // Review submission state
+  // Real Database Reviews state
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReviewerName, setNewReviewerName] = useState('');
   const [newReviewComment, setNewReviewComment] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(5);
-  const [recentReviews, setRecentReviews] = useState([
-    {
-      id: 1,
-      author: 'Ali Rehman',
-      rating: 5,
-      date: '2 days ago',
-      comment: 'Fabric bohot soft aur premium hai, stitching quality top-notch hai. Highly recommended!',
-      verified: true
-    },
-    {
-      id: 2,
-      author: 'Zainab Fatima',
-      rating: 5,
-      date: '1 week ago',
-      comment: 'Drape and fit is absolutely beautiful. Exactly as shown in the picture, will buy again.',
-      verified: true
-    }
-  ]);
+  const [recentReviews, setRecentReviews] = useState([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(false);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  // Fetch real reviews from MongoDB when product opens
+  const productId = product ? (product.id || product._id) : null;
+  useEffect(() => {
+    if (!productId || !isOpen) return;
+
+    let isMounted = true;
+    setIsLoadingReviews(true);
+
+    fetch(`${API_BASE_URL}/api/reviews/${productId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!isMounted) return;
+        if (data?.success && Array.isArray(data.reviews)) {
+          setRecentReviews(data.reviews);
+        } else {
+          setRecentReviews([]);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch reviews:', err);
+        if (isMounted) setRecentReviews([]);
+      })
+      .finally(() => {
+        if (isMounted) setIsLoadingReviews(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [productId, isOpen]);
 
   // Body overflow locking & Esc key
   useEffect(() => {
@@ -82,15 +101,23 @@ export default function QuickViewDrawer() {
 
   if (!isOpen || !product) return null;
 
-  // Alternate thumbnail images
-  const thumbnails = [
-    product.image,
-    'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=800&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=800&auto=format&fit=crop',
-  ].filter(Boolean);
+  // Authentic product thumbnails: Use actual product images if provided, or single image
+  const thumbnails = Array.isArray(product.images) && product.images.length > 0
+    ? [product.image, ...product.images.filter((img) => img !== product.image)]
+    : [product.image].filter(Boolean);
 
   const isFavorited = isInWishlist(product.id || product._id);
-  const originalPrice = Math.round((Number(product.price) || 0) * 1.25);
+  const hasDiscount = Boolean(product.originalPrice && Number(product.originalPrice) > Number(product.price));
+  const originalPrice = hasDiscount ? Number(product.originalPrice) : null;
+  const discountPercent = hasDiscount
+    ? Math.round(((Number(product.originalPrice) - Number(product.price)) / Number(product.originalPrice)) * 100)
+    : 0;
+
+  // Real review aggregates
+  const totalReviewsCount = recentReviews.length;
+  const averageRating = totalReviewsCount > 0
+    ? (recentReviews.reduce((sum, r) => sum + (r.rating || 5), 0) / totalReviewsCount).toFixed(1)
+    : null;
 
   // Dynamic Out of Stock Detection
   const isOutOfStock = 
@@ -135,27 +162,44 @@ export default function QuickViewDrawer() {
     setOpenAccordion((prev) => (prev === section ? null : section));
   };
 
-  const handleReviewSubmit = (e) => {
+  // Submit real review to MongoDB
+  const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!newReviewerName.trim() || !newReviewComment.trim()) {
       showToast('Please enter your name and review text');
       return;
     }
 
-    const reviewObj = {
-      id: Date.now(),
-      author: newReviewerName.trim(),
-      rating: newReviewRating,
-      date: 'Just now',
-      comment: newReviewComment.trim(),
-      verified: true
-    };
+    setIsSubmittingReview(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id || product._id,
+          author: newReviewerName.trim(),
+          rating: newReviewRating,
+          comment: newReviewComment.trim(),
+          verified: true,
+        }),
+      });
 
-    setRecentReviews([reviewObj, ...recentReviews]);
-    setNewReviewerName('');
-    setNewReviewComment('');
-    setShowReviewForm(false);
-    showToast('Thank you! Your review has been submitted.');
+      const data = await res.json();
+      if (res.ok && data.success && data.review) {
+        setRecentReviews((prev) => [data.review, ...prev]);
+        setNewReviewerName('');
+        setNewReviewComment('');
+        setShowReviewForm(false);
+        showToast('Review submitted successfully and saved to database!');
+      } else {
+        showToast(data.message || 'Failed to submit review');
+      }
+    } catch (err) {
+      console.error('Review submit error:', err);
+      showToast('Server error: Could not save review to database.');
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
 
   return (
@@ -279,12 +323,16 @@ export default function QuickViewDrawer() {
                     <span className="text-2xl font-bold text-neutral-900 text-left">
                       ${product.price}
                     </span>
-                    <span className="text-xs text-neutral-400 line-through text-left">
-                      ${originalPrice}
-                    </span>
-                    <span className="text-[9px] uppercase font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-xs text-left">
-                      20% OFF
-                    </span>
+                    {hasDiscount && (
+                      <>
+                        <span className="text-xs text-neutral-400 line-through text-left">
+                          ${originalPrice}
+                        </span>
+                        <span className="text-[9px] uppercase font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-xs text-left">
+                          {discountPercent}% OFF
+                        </span>
+                      </>
+                    )}
                   </div>
 
                   {/* Dynamic Stock Status Badge */}
@@ -311,9 +359,14 @@ export default function QuickViewDrawer() {
                   <span className="uppercase tracking-widest text-neutral-600 font-semibold text-[10px] text-left">
                     Select Size
                   </span>
-                  <span className="text-[10px] text-neutral-500 underline cursor-pointer hover:text-neutral-900 text-right">
-                    Size Guide
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setShowSizeGuide(true)}
+                    className="text-[10px] text-neutral-600 underline cursor-pointer hover:text-neutral-900 text-right flex items-center gap-1 font-medium"
+                  >
+                    <Ruler className="w-3 h-3 text-neutral-500" />
+                    <span>Size Guide</span>
+                  </button>
                 </div>
                 <div className="grid grid-cols-6 gap-1.5">
                   {AVAILABLE_SIZES.map((size) => (
@@ -422,7 +475,7 @@ export default function QuickViewDrawer() {
               {openAccordion === 'shipping' && (
                 <div className="pb-3 text-xs text-neutral-500 font-light space-y-1 pl-5 animate-fade-in text-left">
                   <p className="text-left">• Free express shipping nationwide (2–4 business days delivery).</p>
-                  <p className="text-left">• Cash on Delivery & 3D Secure Card payments supported.</p>
+                  <p className="text-left">• Complimentary doorstep parcel inspection supported.</p>
                   <p className="text-left">• Easy 14-day hassle-free exchange & return guarantee.</p>
                 </div>
               )}
@@ -437,7 +490,9 @@ export default function QuickViewDrawer() {
               >
                 <span className="flex items-center gap-2 text-left">
                   <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                  Customer Reviews (4.9 / 5.0 • {recentReviews.length + 120} reviews)
+                  {totalReviewsCount > 0
+                    ? `Customer Reviews (${averageRating} / 5.0 • ${totalReviewsCount} ${totalReviewsCount === 1 ? 'review' : 'reviews'})`
+                    : 'Customer Reviews (0 Reviews • Be the first)'}
                 </span>
                 {openAccordion === 'reviews' ? (
                   <ChevronUp className="w-4 h-4 text-neutral-500" />
@@ -450,7 +505,7 @@ export default function QuickViewDrawer() {
                 <div className="pb-4 pt-1 space-y-3 pl-2 sm:pl-4 animate-fade-in text-left">
                   <div className="flex items-center justify-between text-left">
                     <span className="text-[10px] uppercase font-bold text-neutral-700">
-                      Verified Buyer Feedback
+                      Verified Buyer Feedback ({totalReviewsCount})
                     </span>
                     <button
                       type="button"
@@ -500,40 +555,56 @@ export default function QuickViewDrawer() {
                       />
                       <button
                         type="submit"
-                        className="w-full bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold py-2 hover:bg-neutral-800 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                        disabled={isSubmittingReview}
+                        className="w-full bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold py-2 hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-1.5"
                       >
                         <Send className="w-3 h-3" />
-                        Submit Review
+                        {isSubmittingReview ? 'Submitting to database...' : 'Submit Review'}
                       </button>
                     </form>
                   )}
 
-                  {/* Recent Reviews List */}
-                  <div className="space-y-2 text-left">
-                    {recentReviews.slice(0, 2).map((rev) => (
-                      <div key={rev.id} className="p-2.5 bg-neutral-50 rounded-xs space-y-1 text-left border border-neutral-200/60">
-                        <div className="flex items-center justify-between text-xs text-left">
-                          <span className="font-semibold text-neutral-900 flex items-center gap-1 text-left text-[11px]">
-                            {rev.author}
-                            {rev.verified && (
-                              <span className="text-[8px] text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded-xs font-normal">
-                                Verified
-                              </span>
-                            )}
-                          </span>
-                          <span className="text-[9px] text-neutral-400 text-right">{rev.date}</span>
+                  {/* Real Reviews List */}
+                  {isLoadingReviews ? (
+                    <p className="text-xs text-neutral-400 py-3 text-left">
+                      Loading verified reviews from database...
+                    </p>
+                  ) : recentReviews.length === 0 ? (
+                    <div className="p-3 bg-neutral-50 rounded-xs border border-neutral-200/60 text-left space-y-1">
+                      <p className="text-xs font-semibold text-neutral-800">No reviews yet for this piece.</p>
+                      <p className="text-[11px] text-neutral-500 font-light">
+                        Be the first verified customer to share thoughts on fabric and silhouette.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2 text-left max-h-60 overflow-y-auto pr-1">
+                      {recentReviews.map((rev) => (
+                        <div key={rev._id || rev.id} className="p-2.5 bg-neutral-50 rounded-xs space-y-1 text-left border border-neutral-200/60">
+                          <div className="flex items-center justify-between text-xs text-left">
+                            <span className="font-semibold text-neutral-900 flex items-center gap-1 text-left text-[11px]">
+                              {rev.author}
+                              {rev.verified && (
+                                <span className="text-[8px] text-emerald-600 bg-emerald-50 px-1 py-0.2 rounded-xs font-normal">
+                                  Verified
+                                </span>
+                              )}
+                            </span>
+                            <span className="text-[9px] text-neutral-400 text-right">
+                              {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : (rev.date || 'Recent')}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-amber-500 text-left">
+                            {[...Array(rev.rating || 5)].map((_, i) => (
+                              <Star key={i} className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
+                            ))}
+                          </div>
+                          <p className="text-[11px] text-neutral-600 font-light leading-relaxed text-left">
+                            "{rev.comment}"
+                          </p>
                         </div>
-                        <div className="flex items-center text-amber-500 text-left">
-                          {[...Array(rev.rating)].map((_, i) => (
-                            <Star key={i} className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
-                          ))}
-                        </div>
-                        <p className="text-[11px] text-neutral-600 font-light leading-relaxed text-left">
-                          "{rev.comment}"
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -641,6 +712,103 @@ export default function QuickViewDrawer() {
         </div>
 
       </div>
+
+      {/* 8. ATELIER SIZE GUIDE MODAL */}
+      {showSizeGuide && (
+        <div className="fixed inset-0 z-1000 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white border border-neutral-200 shadow-2xl max-w-lg w-full p-6 text-left space-y-5 rounded-xs relative">
+            <div className="flex items-center justify-between border-b border-neutral-200 pb-3">
+              <div>
+                <span className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold block">
+                  Atelier Standards
+                </span>
+                <h3 className="text-base font-light uppercase tracking-wider text-neutral-900">
+                  Size & Measurement Guide
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowSizeGuide(false)}
+                className="text-neutral-400 hover:text-neutral-900 cursor-pointer p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-neutral-500 font-light leading-relaxed">
+              Measurements reflect true garment specifications in inches and centimeters. For relaxed drape silhouettes, select your standard size.
+            </p>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border border-neutral-200">
+                <thead>
+                  <tr className="bg-neutral-100 border-b border-neutral-200 text-[10px] uppercase tracking-widest text-neutral-700">
+                    <th className="p-2.5 font-bold">Size</th>
+                    <th className="p-2.5 font-bold">Chest (in/cm)</th>
+                    <th className="p-2.5 font-bold">Waist (in/cm)</th>
+                    <th className="p-2.5 font-bold">Hip (in/cm)</th>
+                    <th className="p-2.5 font-bold">Length (in/cm)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-neutral-200 text-neutral-600">
+                  <tr className="hover:bg-neutral-50">
+                    <td className="p-2.5 font-bold text-neutral-900">XS</td>
+                    <td className="p-2.5">34" / 86cm</td>
+                    <td className="p-2.5">28" / 71cm</td>
+                    <td className="p-2.5">35" / 89cm</td>
+                    <td className="p-2.5">26" / 66cm</td>
+                  </tr>
+                  <tr className="hover:bg-neutral-50">
+                    <td className="p-2.5 font-bold text-neutral-900">S</td>
+                    <td className="p-2.5">36" / 91cm</td>
+                    <td className="p-2.5">30" / 76cm</td>
+                    <td className="p-2.5">37" / 94cm</td>
+                    <td className="p-2.5">27" / 68cm</td>
+                  </tr>
+                  <tr className="hover:bg-neutral-50 bg-neutral-50/50">
+                    <td className="p-2.5 font-bold text-neutral-900">M</td>
+                    <td className="p-2.5">38" / 96cm</td>
+                    <td className="p-2.5">32" / 81cm</td>
+                    <td className="p-2.5">39" / 99cm</td>
+                    <td className="p-2.5">28" / 71cm</td>
+                  </tr>
+                  <tr className="hover:bg-neutral-50">
+                    <td className="p-2.5 font-bold text-neutral-900">L</td>
+                    <td className="p-2.5">41" / 104cm</td>
+                    <td className="p-2.5">35" / 89cm</td>
+                    <td className="p-2.5">42" / 106cm</td>
+                    <td className="p-2.5">29" / 74cm</td>
+                  </tr>
+                  <tr className="hover:bg-neutral-50">
+                    <td className="p-2.5 font-bold text-neutral-900">XL</td>
+                    <td className="p-2.5">44" / 112cm</td>
+                    <td className="p-2.5">38" / 96cm</td>
+                    <td className="p-2.5">45" / 114cm</td>
+                    <td className="p-2.5">30" / 76cm</td>
+                  </tr>
+                  <tr className="hover:bg-neutral-50">
+                    <td className="p-2.5 font-bold text-neutral-900">XXL</td>
+                    <td className="p-2.5">47" / 119cm</td>
+                    <td className="p-2.5">41" / 104cm</td>
+                    <td className="p-2.5">48" / 122cm</td>
+                    <td className="p-2.5">31" / 79cm</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="pt-2 text-center">
+              <button
+                type="button"
+                onClick={() => setShowSizeGuide(false)}
+                className="w-full bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold py-2.5 hover:bg-neutral-800 transition-colors cursor-pointer"
+              >
+                Close Size Guide
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
