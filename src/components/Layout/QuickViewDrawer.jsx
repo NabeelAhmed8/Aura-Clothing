@@ -57,7 +57,9 @@ export default function QuickViewDrawer() {
     if (!productId || !isOpen) return;
 
     let isMounted = true;
-    setIsLoadingReviews(true);
+    const timeoutId = window.setTimeout(() => {
+      if (isMounted) setIsLoadingReviews(true);
+    }, 0);
 
     fetch(`${API_BASE_URL}/api/reviews/${productId}`)
       .then((res) => res.json())
@@ -79,6 +81,7 @@ export default function QuickViewDrawer() {
 
     return () => {
       isMounted = false;
+      window.clearTimeout(timeoutId);
     };
   }, [productId, isOpen]);
 
@@ -258,6 +261,8 @@ export default function QuickViewDrawer() {
                 <img
                   src={activeImage || product.image}
                   alt={product.name}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                 />
                 
@@ -305,6 +310,8 @@ export default function QuickViewDrawer() {
                       <img 
                         src={imgUrl} 
                         alt="" 
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover object-center"
                       />
                     </button>

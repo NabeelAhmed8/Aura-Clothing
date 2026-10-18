@@ -4,6 +4,8 @@ import { useQuickViewStore } from '../store/useQuickViewStore';
 import { Eye } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 import Footer from '../components/Layout/Footer';
+import LazyImage from '../components/ui/LazyImage';
+import { getCachedData, setCachedData } from '../utils/productCache';
 
 export default function LookbookPage() {
   const addToCart = useCartStore((state) => state.addToCart);
@@ -28,7 +30,21 @@ export default function LookbookPage() {
   }, [activeTab]);
 
   const fetchOutfits = () => {
-    fetch(`${API_BASE_URL}/api/products`, { cache: 'no-store' })
+    const cached = getCachedData('all_products');
+    if (cached) {
+      setOutfits(cached);
+      const initialQtys = {};
+      cached.forEach((item) => {
+        initialQtys[item.id] = 1;
+      });
+      setQuantities(initialQtys);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+    setError(null);
+
+    fetch(`${API_BASE_URL}/api/products`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
         return res.json();
@@ -47,6 +63,7 @@ export default function LookbookPage() {
             inStock: item.inStock !== undefined ? Boolean(item.inStock) : (item.stock === undefined || item.stock > 0),
           }));
 
+          setCachedData('all_products', formattedOutfits);
           setOutfits(formattedOutfits);
           const initialQtys = {};
           formattedOutfits.forEach((item) => {
@@ -60,14 +77,20 @@ export default function LookbookPage() {
       })
       .catch((err) => {
         console.error('Failed to fetch outfits from backend:', err);
-        setOutfits([]);
-        setError('Server is offline or unavailable. Outfits cannot be loaded.');
+        if (!cached) {
+          setOutfits([]);
+          setError('Server is offline or unavailable. Outfits cannot be loaded.');
+        }
         setLoading(false);
       });
   };
 
   useEffect(() => {
-    fetchOutfits();
+    const timeoutId = window.setTimeout(() => {
+      fetchOutfits();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   const handleQuantityChange = (id, delta) => {
@@ -173,10 +196,12 @@ export default function LookbookPage() {
                     onClick={() => openQuickView(outfit)}
                     className="relative aspect-4/5 bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img"
                   >
-                    <img 
+                    <LazyImage 
                       src={outfit.image} 
                       alt={outfit.name} 
-                      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" 
+                      aspectRatio="aspect-4/5"
+                      targetWidth={500}
+                      className="transition-transform duration-500 group-hover:scale-105" 
                     />
                     <div className="absolute top-2 left-2 bg-neutral-900/80 backdrop-blur-xs text-white px-2 py-0.5 text-[9px] uppercase tracking-wider font-semibold rounded-xs">
                       {outfit.category}

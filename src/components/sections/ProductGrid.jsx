@@ -3,6 +3,8 @@ import { useCartStore } from '../../store/useCartStore';
 import { useQuickViewStore } from '../../store/useQuickViewStore';
 import { Eye } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
+import LazyImage from '../ui/LazyImage';
+import { getCachedData, setCachedData } from '../../utils/productCache';
 
 export default function ProductGrid() {
   const addToCart = useCartStore((state) => state.addToCart);
@@ -13,12 +15,25 @@ export default function ProductGrid() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchProducts = async () => {
-    setLoading(true);
+  const fetchProducts = async (useCache = true) => {
+    if (useCache) {
+      const cached = getCachedData('all_products');
+      if (cached && cached.length > 0) {
+        setProducts(cached);
+        const initialQtys = {};
+        cached.forEach((p) => { initialQtys[p.id] = 1; });
+        setQuantities(initialQtys);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+    } else {
+      setLoading(true);
+    }
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/products`, { cache: 'no-store' });
+      const res = await fetch(`${API_BASE_URL}/api/products`);
       if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
 
       const data = await res.json();
@@ -36,19 +51,23 @@ export default function ProductGrid() {
           inStock: item.inStock !== undefined ? Boolean(item.inStock) : (item.stock === undefined || item.stock > 0),
         }));
 
+        setCachedData('all_products', formattedProducts);
         setProducts(formattedProducts);
         const initialQtys = {};
         formattedProducts.forEach((p) => {
           initialQtys[p.id] = 1;
         });
         setQuantities(initialQtys);
-      } else {
+        setError(null);
+      } else if (!getCachedData('all_products')) {
         setProducts([]);
       }
     } catch (err) {
       console.error('Failed to fetch products from backend:', err);
-      setProducts([]);
-      setError('Server is offline or unavailable. Products cannot be loaded.');
+      if (!getCachedData('all_products')) {
+        setProducts([]);
+        setError('Server is offline or unavailable. Products cannot be loaded.');
+      }
     } finally {
       setLoading(false);
     }
@@ -148,15 +167,17 @@ export default function ProductGrid() {
                 key={product.id}
                 className="group relative flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 transition-shadow hover:shadow-sm text-left"
               >
-                {/* Product Image */}
+                {/* Product Image with Lazy Loading & Shimmer */}
                 <div 
                   onClick={() => openQuickView(product)}
                   className="relative aspect-3/4 bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img"
                 >
-                  <img
+                  <LazyImage
                     src={product.image}
                     alt={product.name}
-                    className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    aspectRatio="aspect-3/4"
+                    targetWidth={500}
+                    className="transition-transform duration-500 group-hover:scale-105"
                   />
                   {/* Out of Stock overlay badge */}
                   {isOutOfStock && (

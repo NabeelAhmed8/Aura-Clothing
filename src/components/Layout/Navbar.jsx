@@ -16,11 +16,35 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const isShopActive = location.pathname === '/shop' && (!location.search || location.search === '?category=All');
+  const isNewArrivalsActive = location.pathname === '/new-arrivals';
+  const isWomenActive = location.pathname === '/shop' && location.search.toLowerCase().includes('category=women');
+  const isMenActive = location.pathname === '/shop' && location.search.toLowerCase().includes('category=men');
+  const isLookbookActive = location.pathname === '/lookbook';
+
   const handleLogoClick = (e) => {
     setIsMobileMenuOpen(false);
     setIsSearchOpen(false);
     if (location.pathname === '/') {
       e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+      document.documentElement.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleShopClick = (e) => {
+    setIsMobileMenuOpen(false);
+    setIsSearchOpen(false);
+    if (location.pathname === '/shop' && !location.search) {
+      if (e) e.preventDefault();
       window.scrollTo({
         top: 0,
         left: 0,
@@ -71,11 +95,38 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center space-x-8 text-xs tracking-widest uppercase font-medium text-neutral-800">
-          <Link to="/new-arrivals" className="hover:text-neutral-500 transition-colors">New Arrivals</Link>
-          <Link to="/shop?category=Women" className="hover:text-neutral-500 transition-colors">Women</Link>
-          <Link to="/shop?category=Men" className="hover:text-neutral-500 transition-colors">Men</Link>
-          <Link to="/shop" className="hover:text-neutral-500 transition-colors">Collections</Link>
+        <nav className="hidden md:flex items-center space-x-7 lg:space-x-8 text-xs tracking-widest uppercase font-medium text-neutral-800">
+          <Link 
+            to="/new-arrivals" 
+            className={`transition-colors ${isNewArrivalsActive ? 'text-neutral-900 font-bold' : 'hover:text-neutral-500'}`}
+          >
+            New Arrivals
+          </Link>
+          <Link 
+            to="/shop" 
+            onClick={handleShopClick} 
+            className={`transition-colors ${isShopActive ? 'text-neutral-900 font-bold' : 'hover:text-neutral-500'}`}
+          >
+            Shop
+          </Link>
+          <Link 
+            to="/shop?category=Men" 
+            className={`transition-colors ${isMenActive ? 'text-neutral-900 font-bold' : 'hover:text-neutral-500'}`}
+          >
+            Men
+          </Link>
+          <Link 
+            to="/shop?category=Women" 
+            className={`transition-colors ${isWomenActive ? 'text-neutral-900 font-bold' : 'hover:text-neutral-500'}`}
+          >
+            Women
+          </Link>
+          <Link 
+            to="/lookbook" 
+            className={`transition-colors ${isLookbookActive ? 'text-neutral-900 font-bold' : 'hover:text-neutral-500'}`}
+          >
+            Lookbook
+          </Link>
         </nav>
 
         {/* Action Icons */}
@@ -152,11 +203,46 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-20 inset-x-0 bg-[#F9F9F8] border-b border-neutral-200 px-6 py-8 shadow-xl z-45 space-y-6">
           <nav className="flex flex-col space-y-4 text-xs tracking-widest uppercase font-medium text-neutral-900">
-            <Link to="/new-arrivals" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-500 transition-colors py-2 border-b border-neutral-200">New Arrivals</Link>
-            <Link to="/shop?category=Women" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-500 transition-colors py-2 border-b border-neutral-200">Women</Link>
-            <Link to="/shop?category=Men" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-500 transition-colors py-2 border-b border-neutral-200">Men</Link>
-            <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-500 transition-colors py-2 border-b border-neutral-200">Collections</Link>
-            <Link to={user ? "/profile?tab=profile" : "/login"} onClick={() => setIsMobileMenuOpen(false)} className="hover:text-neutral-500 transition-colors py-2">
+            <Link 
+              to="/shop" 
+              onClick={handleShopClick} 
+              className={`py-2 border-b border-neutral-200 transition-colors ${isShopActive ? 'font-bold text-neutral-900' : 'hover:text-neutral-500'}`}
+            >
+              Shop
+            </Link>
+            <Link 
+              to="/new-arrivals" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className={`py-2 border-b border-neutral-200 transition-colors ${isNewArrivalsActive ? 'font-bold text-neutral-900' : 'hover:text-neutral-500'}`}
+            >
+              New Arrivals
+            </Link>
+            <Link 
+              to="/shop?category=Women" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className={`py-2 border-b border-neutral-200 transition-colors ${isWomenActive ? 'font-bold text-neutral-900' : 'hover:text-neutral-500'}`}
+            >
+              Women
+            </Link>
+            <Link 
+              to="/shop?category=Men" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className={`py-2 border-b border-neutral-200 transition-colors ${isMenActive ? 'font-bold text-neutral-900' : 'hover:text-neutral-500'}`}
+            >
+              Men
+            </Link>
+            <Link 
+              to="/lookbook" 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className={`py-2 border-b border-neutral-200 transition-colors ${isLookbookActive ? 'font-bold text-neutral-900' : 'hover:text-neutral-500'}`}
+            >
+              Lookbook
+            </Link>
+            <Link 
+              to={user ? "/profile?tab=profile" : "/login"} 
+              onClick={() => setIsMobileMenuOpen(false)} 
+              className="hover:text-neutral-500 transition-colors py-2"
+            >
               {user ? 'My Profile' : 'Sign In / Account'}
             </Link>
           </nav>

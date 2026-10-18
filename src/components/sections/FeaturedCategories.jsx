@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import LazyImage from '../ui/LazyImage';
 
 export default function FeaturedCategories() {
   const navigate = useNavigate();
@@ -40,10 +41,13 @@ export default function FeaturedCategories() {
             className="group relative bg-neutral-200 overflow-hidden rounded-sm flex flex-col justify-end p-8 cursor-pointer select-none"
             style={{ aspectRatio: '4/5' }}
           >
-            <img 
+            <LazyImage 
               src={cat.image} 
               alt={cat.title} 
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+              aspectRatio=""
+              wrapperClassName="absolute inset-0 w-full h-full"
+              targetWidth={800}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
             />
             
             <div 

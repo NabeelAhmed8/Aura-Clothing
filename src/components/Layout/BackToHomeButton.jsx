@@ -20,13 +20,11 @@ export default function BackToHomeButton() {
     >
       <Link
         to="/"
-        className="group inline-flex items-center justify-center gap-2 bg-neutral-900/95 text-white px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.35)] hover:bg-neutral-800 border border-neutral-700/60 backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 whitespace-nowrap shrink-0 min-w-max cursor-pointer focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2 min-h-10.5 sm:min-h-11"
+        className="group flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-neutral-900/95 text-white shadow-[0_8px_25px_rgba(0,0,0,0.3)] hover:bg-neutral-800 border border-neutral-700/60 backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-neutral-400 focus:ring-offset-2"
         aria-label="Back to Home"
+        title="Back to Home"
       >
-        <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 transition-transform duration-300 group-hover:-translate-x-1" />
-        <span className="text-[10px] sm:text-xs uppercase tracking-widest font-bold whitespace-nowrap shrink-0 leading-none">
-          Back to Home
-        </span>
+        <ArrowLeft className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-0.5" />
       </Link>
     </aside>
   );

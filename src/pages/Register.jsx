@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Mail } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
 
 export default function Register() {
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
+  const [isSuccessRegistered, setIsSuccessRegistered] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -39,6 +41,13 @@ export default function Register() {
         throw new Error(result.error || result.message || 'Registration failed');
       }
 
+      if (result.requiresVerification) {
+        setIsSuccessRegistered(true);
+        setRegisteredEmail(data.email);
+        showToast('A verification link has been sent to your email.');
+        return;
+      }
+
       const userProfileData = {
         ...(result.user || {}),
         firstName: result.user?.firstName || data.firstName || '',
@@ -63,25 +72,64 @@ export default function Register() {
   return (
     <div className="min-h-screen w-full bg-[#F9F9F8] flex flex-col justify-start mt-4 pb-12 px-6 space-y-3">
       <div className="w-full max-w-md mx-auto">
-        <Link to="/" className="inline-flex items-center space-x-2 text-xs uppercase tracking-widest text-neutral-600 hover:text-neutral-900 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Home</span>
+        <Link 
+          to="/" 
+          aria-label="Back to Home"
+          title="Back to Home"
+          className="inline-flex items-center text-xs text-neutral-600 hover:text-neutral-900 transition-colors"
+        >
+          <ArrowLeft className="w-5 h-5" />
         </Link>
       </div>
 
-      <div className="w-full max-w-md mx-auto bg-white p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-black tracking-widest text-neutral-900">AURA</h1>
-          <p className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Create a new account</p>
-        </div>
-
-        {serverError && (
-          <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-sm text-center uppercase tracking-wider">
-            {serverError}
+      {isSuccessRegistered ? (
+        <div className="w-full max-w-md mx-auto bg-white p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-center animate-fade-in">
+          <div className="w-14 h-14 bg-neutral-100 text-neutral-900 rounded-full flex items-center justify-center mx-auto border border-neutral-200">
+            <Mail className="w-7 h-7" />
           </div>
-        )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <h1 className="text-xl font-black tracking-widest text-neutral-900 uppercase">Verify Your Email</h1>
+            <p className="text-xs text-neutral-600 leading-relaxed">
+              A verification link has been sent to your email address:
+            </p>
+            <p className="text-xs font-mono font-bold text-neutral-900 bg-neutral-50 py-1.5 px-3 rounded-xs border border-neutral-200 inline-block">
+              {registeredEmail}
+            </p>
+          </div>
+
+          <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-sm text-left space-y-2 text-xs text-neutral-600">
+            <p className="font-bold text-neutral-900 uppercase tracking-wider text-[10px]">Next Steps:</p>
+            <ol className="list-decimal pl-4 space-y-1.5 text-[11px] leading-relaxed text-neutral-700">
+              <li>Open your email inbox (please check your Spam/Junk folder if not found).</li>
+              <li>Click the <strong>"Verify Account & Login"</strong> button.</li>
+              <li>Your account will be verified and you will be signed in automatically.</li>
+            </ol>
+          </div>
+
+          <div className="pt-2 border-t border-neutral-100 space-y-2">
+            <Link
+              to="/login"
+              className="w-full bg-neutral-900 text-white py-3.5 px-6 text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer flex items-center justify-center text-center"
+            >
+              Go to Sign In
+            </Link>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full max-w-md mx-auto bg-white p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-black tracking-widest text-neutral-900">AURA</h1>
+            <p className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Create a new account</p>
+          </div>
+
+          {serverError && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-sm text-center uppercase tracking-wider">
+              {serverError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
@@ -208,6 +256,7 @@ export default function Register() {
           </button>
         </form>
       </div>
+      )}
 
       <div className="text-center pt-4 border-t border-neutral-100 mt-2">
         <p className="text-xs text-neutral-500 uppercase tracking-wider">

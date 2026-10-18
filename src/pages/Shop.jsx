@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useQuickViewStore } from '../store/useQuickViewStore';
-import { Eye } from 'lucide-react';
+import { Eye, ChevronDown } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 import Footer from '../components/Layout/Footer';
+import LazyImage from '../components/ui/LazyImage';
+import { getCachedData, setCachedData } from '../utils/productCache';
 
 export default function Shop() {
   const addToCart = useCartStore((state) => state.addToCart);
@@ -15,6 +17,7 @@ export default function Shop() {
   const [quantities, setQuantities] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(12);
 
   // Page header ko target karne ke liye ref
   const shopHeaderRef = useRef(null);
@@ -22,7 +25,14 @@ export default function Shop() {
   const selectedCategory = searchParams.get('category') || 'All';
   const searchQuery = searchParams.get('search') || '';
 
-  // Jab bhi category ya search query change ho, smooth scroll to top
+  const filterKey = `${selectedCategory}_${searchQuery}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+
+  if (prevFilterKey !== filterKey) {
+    setPrevFilterKey(filterKey);
+    setVisibleCount(12);
+  }
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -31,10 +41,24 @@ export default function Shop() {
     });
   }, [selectedCategory, searchQuery]);
 
-  const fetchProducts = () => {
-    setLoading(true);
+  const fetchProducts = (useCache = true) => {
+    if (useCache) {
+      const cached = getCachedData('all_products');
+      if (cached && cached.length > 0) {
+        setProducts(cached);
+        const initialQtys = {};
+        cached.forEach((p) => { initialQtys[p.id] = 1; });
+        setQuantities(initialQtys);
+        setLoading(false);
+      } else {
+        setLoading(true);
+      }
+    } else {
+      setLoading(true);
+    }
     setError(null);
-    fetch(`${API_BASE_URL}/api/products`, { cache: 'no-store' })
+
+    fetch(`${API_BASE_URL}/api/products`)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
         return res.json();
@@ -53,21 +77,25 @@ export default function Shop() {
             inStock: item.inStock !== undefined ? Boolean(item.inStock) : (item.stock === undefined || item.stock > 0),
           }));
 
+          setCachedData('all_products', formattedProducts);
           setProducts(formattedProducts);
           const initialQtys = {};
           formattedProducts.forEach((p) => {
             initialQtys[p.id] = 1;
           });
           setQuantities(initialQtys);
-        } else {
+          setError(null);
+        } else if (!getCachedData('all_products')) {
           setProducts([]);
         }
         setLoading(false);
       })
       .catch((err) => {
         console.error('Failed to fetch products from backend:', err);
-        setProducts([]);
-        setError('Server is offline or unavailable. Products cannot be loaded.');
+        if (!getCachedData('all_products')) {
+          setProducts([]);
+          setError('Server is offline or unavailable. Products cannot be loaded.');
+        }
         setLoading(false);
       });
   };
@@ -134,7 +162,7 @@ export default function Shop() {
 
         {/* Category Filters */}
         <div role="tablist" aria-label="Product categories" className="flex flex-wrap justify-center items-center gap-6 sm:space-x-8 mb-8 text-xs uppercase tracking-widest font-medium">
-          {['All', 'Women', 'Men', 'Accessories'].map((cat) => {
+          {['All', 'Men', 'Women', 'Accessories'].map((cat) => {
             const isActive = selectedCategory.toLowerCase() === cat.toLowerCase();
             return (
               <button
@@ -211,9 +239,10 @@ export default function Shop() {
             No products found in this category.
           </div>
         ) : (
-          /* 6-Column Compact Product Grid */
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
-            {filteredProducts.map((product) => {
+          <>
+            {/* 6-Column Compact Product Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
+            {filteredProducts.slice(0, visibleCount).map((product) => {
               const currentQty = quantities[product.id] || 1;
 
               const isOutOfStock = 
@@ -228,15 +257,17 @@ export default function Shop() {
                   key={product.id} 
                   className="group relative flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 hover:border-neutral-400 transition-all hover:shadow-xs text-left"
                 >
-                  {/* Compact Product Image */}
+                  {/* Compact Product Image with Lazy Loading & Shimmer */}
                   <div 
                     onClick={() => openQuickView(product)}
                     className="relative aspect-4/5 bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img"
                   >
-                    <img 
+                    <LazyImage 
                       src={product.image} 
                       alt={product.name} 
-                      className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105" 
+                      aspectRatio="aspect-4/5"
+                      targetWidth={500}
+                      className="transition-transform duration-500 group-hover:scale-105" 
                     />
                     {/* Category Badge aligned exactly like Lookbook */}
                     <div className="absolute top-2 left-2 bg-neutral-900/80 backdrop-blur-xs text-white px-2 py-0.5 text-[9px] uppercase tracking-wider font-semibold rounded-xs">
@@ -329,6 +360,21 @@ export default function Shop() {
               );
             })}
           </div>
+
+          {/* Progressive Loading Controls */}
+          {visibleCount < filteredProducts.length && (
+            <div className="text-center mt-12 mb-4">
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + 12)}
+                className="px-8 py-3.5 border border-neutral-900 bg-white text-neutral-900 text-xs uppercase tracking-widest font-bold hover:bg-neutral-900 hover:text-white transition-all rounded-xs cursor-pointer inline-flex items-center space-x-2 shadow-xs"
+              >
+                <span>Load More Products ({filteredProducts.length - visibleCount} remaining)</span>
+                <ChevronDown className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          </>
         )}
       </main>
 
