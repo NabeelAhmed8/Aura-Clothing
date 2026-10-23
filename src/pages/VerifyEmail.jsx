@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { CheckCircle2, XCircle, Mail, RefreshCw, ArrowLeft } from 'lucide-react';
+import { CheckCircle2, Mail, ArrowLeft, RefreshCw, KeyRound } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
+import OtpVerificationCard from '../components/auth/OtpVerificationCard';
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -11,29 +12,27 @@ export default function VerifyEmail() {
   const setUser = useCartStore((state) => state.setUser);
 
   const status = searchParams.get('status'); // 'success' or 'failed'
-  const emailParam = searchParams.get('email');
+  const emailParam = searchParams.get('email') || '';
   const tokenParam = searchParams.get('token');
-  const errorMessage = searchParams.get('message');
+  const redirectParam = searchParams.get('redirect') || '/profile';
 
+  const [activeEmail, setActiveEmail] = useState(emailParam);
+  const [emailInput, setEmailInput] = useState(emailParam);
   const [countdown, setCountdown] = useState(3);
-  const [resendEmail, setResendEmail] = useState(emailParam || '');
-  const [isResending, setIsResending] = useState(false);
-  const [resendStatus, setResendStatus] = useState({ type: '', message: '' });
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [emailError, setEmailError] = useState('');
 
-  // Handle successful verification & auto-login
+  // Handle legacy/link successful verification
   useEffect(() => {
-    if (status !== 'success' || !emailParam) {
-      return;
-    }
+    if (status !== 'success' || !emailParam) return;
 
     let isMounted = true;
 
-    // Fetch verified user profile to initialize auth session
     fetch(`${API_BASE_URL}/api/auth/user-profile?email=${encodeURIComponent(emailParam)}`, {
       headers: {
         'Accept': 'application/json',
-        ...(tokenParam ? { 'Authorization': `Bearer ${tokenParam}` } : {})
-      }
+        ...(tokenParam ? { 'Authorization': `Bearer ${tokenParam}` } : {}),
+      },
     })
       .then((res) => res.json())
       .then((data) => {
@@ -47,12 +46,11 @@ export default function VerifyEmail() {
         console.error('Failed to sync verified user session:', err);
       });
 
-    // Auto-redirect countdown
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          navigate('/profile');
+          navigate(redirectParam);
           return 0;
         }
         return prev - 1;
@@ -63,193 +61,141 @@ export default function VerifyEmail() {
       isMounted = false;
       clearInterval(timer);
     };
-  }, [status, emailParam, tokenParam, navigate, setUser, showToast]);
+  }, [status, emailParam, tokenParam, navigate, setUser, showToast, redirectParam]);
 
-  const handleResend = async (e) => {
+  const handleSendOtpForEmail = async (e) => {
     e.preventDefault();
-    if (!resendEmail.trim()) {
-      setResendStatus({ type: 'error', message: 'Please enter your email address.' });
+    const trimmed = emailInput.trim().toLowerCase();
+    if (!trimmed) {
+      setEmailError('Please enter your email address.');
       return;
     }
 
-    setIsResending(true);
-    setResendStatus({ type: '', message: '' });
+    setIsSendingCode(true);
+    setEmailError('');
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/resend-verification`, {
+      const res = await fetch(`${API_BASE_URL}/api/auth/resend-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: resendEmail.trim() }),
+        body: JSON.stringify({ email: trimmed }),
       });
       const data = await res.json();
 
       if (res.ok && data.success) {
-        setResendStatus({ type: 'success', message: data.message || 'Verification link sent! Please check your inbox.' });
+        setActiveEmail(trimmed);
+        showToast('6-Digit verification code sent to your email.');
       } else {
-        setResendStatus({ type: 'error', message: data.error || data.message || 'Failed to resend verification link.' });
+        setEmailError(data.error || data.message || 'No account found with this email.');
       }
     } catch {
-      setResendStatus({ type: 'error', message: 'Server connection error. Please try again.' });
+      setEmailError('Server connection failed. Please try again.');
     } finally {
-      setIsResending(false);
+      setIsSendingCode(false);
     }
   };
 
   return (
     <div className="min-h-screen w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-16 px-6">
-      <div className="w-full max-w-md mx-auto bg-white p-8 sm:p-10 border border-neutral-200 shadow-sm rounded-sm text-center space-y-6">
-        
-        {/* Logo */}
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black tracking-widest text-neutral-900">AURA</h1>
-          <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium">Email Verification</p>
-        </div>
-
-        {/* 1. SUCCESS STATE */}
-        {status === 'success' && (
-          <div className="space-y-5 animate-fade-in">
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-lg font-bold uppercase tracking-wider text-neutral-900">
-                Email Verified Successfully!
-              </h2>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Your account is now fully activated and verified. You have been automatically signed in.
-              </p>
-              {emailParam && (
-                <p className="text-[11px] font-mono text-neutral-500 bg-neutral-50 py-1.5 px-3 rounded-xs border border-neutral-200 inline-block">
-                  {emailParam}
-                </p>
-              )}
-            </div>
-
-            <div className="pt-4 border-t border-neutral-100 flex items-center justify-center space-x-2 text-xs text-neutral-500">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-              <p>
-                Redirecting to your profile in <span className="font-bold text-neutral-900">{countdown}s</span>...
-              </p>
-            </div>
+      {/* 1. SUCCESS STATE (from legacy URL redirect) */}
+      {status === 'success' ? (
+        <div className="w-full max-w-md mx-auto bg-white p-8 sm:p-10 border border-neutral-200 shadow-sm rounded-sm text-center space-y-6 animate-fade-in">
+          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
+            <CheckCircle2 className="w-8 h-8" />
           </div>
-        )}
 
-        {/* 2. FAILED STATE */}
-        {status === 'failed' && (
-          <div className="space-y-5">
-            <div className="w-16 h-16 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto border border-red-200">
-              <XCircle className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-lg font-bold uppercase tracking-wider text-neutral-900">
-                Verification Failed
-              </h2>
-              <p className="text-xs text-red-600 leading-relaxed font-medium">
-                {errorMessage || 'The verification link is invalid or has expired (links expire after 24 hours).'}
+          <div className="space-y-2">
+            <h2 className="text-lg font-bold uppercase tracking-wider text-neutral-900">
+              Email Verified Successfully!
+            </h2>
+            <p className="text-xs text-neutral-600 leading-relaxed">
+              Your account is now fully activated and verified.
+            </p>
+            {emailParam && (
+              <p className="text-[11px] font-mono text-neutral-500 bg-neutral-50 py-1.5 px-3 rounded-xs border border-neutral-200 inline-block">
+                {emailParam}
               </p>
-            </div>
-
-            <div className="pt-4 border-t border-neutral-100 text-left space-y-4">
-              <p className="text-xs uppercase tracking-wider text-neutral-700 font-bold">
-                Request a new link:
-              </p>
-
-              {resendStatus.message && (
-                <div className={`p-3 text-xs rounded-sm text-center ${
-                  resendStatus.type === 'success' 
-                    ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' 
-                    : 'bg-red-50 border border-red-200 text-red-700'
-                }`}>
-                  {resendStatus.message}
-                </div>
-              )}
-
-              <form onSubmit={handleResend} className="space-y-3">
-                <input
-                  type="email"
-                  value={resendEmail}
-                  onChange={(e) => setResendEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  className="w-full bg-neutral-50 border border-neutral-300 px-4 py-3 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900"
-                />
-                <button
-                  type="submit"
-                  disabled={isResending}
-                  className="w-full bg-neutral-900 text-white py-3 px-4 text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-2"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`} />
-                  <span>{isResending ? 'Sending...' : 'Resend Verification Link'}</span>
-                </button>
-              </form>
-
-              <div className="text-center pt-2">
-                <Link to="/login" className="inline-flex items-center space-x-1.5 text-xs uppercase tracking-widest text-neutral-600 hover:text-neutral-900 font-medium">
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to Sign In</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 3. DEFAULT STATE (Direct visit) */}
-        {!status && (
-          <div className="space-y-5">
-            <div className="w-16 h-16 bg-neutral-100 text-neutral-800 rounded-full flex items-center justify-center mx-auto border border-neutral-200">
-              <Mail className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-lg font-bold uppercase tracking-wider text-neutral-900">
-                Check Your Email
-              </h2>
-              <p className="text-xs text-neutral-600 leading-relaxed">
-                Please check your inbox and click the verification link sent by AURA to activate your account.
-              </p>
-            </div>
-
-            {resendStatus.message && (
-              <div className={`p-3 text-xs rounded-sm text-center ${
-                resendStatus.type === 'success' 
-                  ? 'bg-emerald-50 border border-emerald-200 text-emerald-800' 
-                  : 'bg-red-50 border border-red-200 text-red-700'
-              }`}>
-                {resendStatus.message}
-              </div>
             )}
+          </div>
 
-            <form onSubmit={handleResend} className="space-y-3 pt-2 text-left">
-              <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium block">
-                Didn't receive the email? Enter your address:
+          <div className="pt-4 border-t border-neutral-100 flex items-center justify-center space-x-2 text-xs text-neutral-500">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+            <p>
+              Redirecting in <span className="font-bold text-neutral-900">{countdown}s</span>...
+            </p>
+          </div>
+        </div>
+      ) : activeEmail ? (
+        /* 2. OTP VERIFICATION FORM */
+        <OtpVerificationCard
+          email={activeEmail}
+          title="Verify Your Account"
+          subtitle="Please enter the 6-digit verification code sent to:"
+          backLabel="← Use another email"
+          onBack={() => setActiveEmail('')}
+          onSuccess={() => {
+            showToast('Account verified successfully! Welcome to AURA.');
+            navigate(redirectParam);
+          }}
+        />
+      ) : (
+        /* 3. PROMPT FOR EMAIL IF NOT PROVIDED IN URL */
+        <div className="w-full max-w-md mx-auto bg-white p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-center animate-fade-in">
+          <div className="w-14 h-14 bg-neutral-100 text-neutral-900 rounded-full flex items-center justify-center mx-auto border border-neutral-200">
+            <KeyRound className="w-7 h-7" />
+          </div>
+
+          <div className="space-y-1.5">
+            <h2 className="text-xl font-black tracking-widest text-neutral-900 uppercase">
+              Account Verification
+            </h2>
+            <p className="text-xs text-neutral-600 leading-relaxed">
+              Enter your registered email address to receive your 6-digit verification code.
+            </p>
+          </div>
+
+          {emailError && (
+            <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xs text-left">
+              {emailError}
+            </div>
+          )}
+
+          <form onSubmit={handleSendOtpForEmail} className="space-y-4 text-left">
+            <div>
+              <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold block mb-1">
+                Email Address
               </label>
               <input
                 type="email"
-                value={resendEmail}
-                onChange={(e) => setResendEmail(e.target.value)}
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full bg-neutral-50 border border-neutral-300 px-4 py-3 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900"
+                required
+                className="w-full px-4 py-3 bg-neutral-50 border border-neutral-300 focus:border-neutral-900 focus:bg-white text-xs text-neutral-900 outline-none rounded-xs transition-colors"
               />
-              <button
-                type="submit"
-                disabled={isResending}
-                className="w-full bg-neutral-900 text-white py-3.5 px-6 text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center space-x-2"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${isResending ? 'animate-spin' : ''}`} />
-                <span>{isResending ? 'Sending Link...' : 'Resend Verification Link'}</span>
-              </button>
-            </form>
-
-            <div className="pt-2 border-t border-neutral-100 text-center">
-              <Link to="/login" className="text-xs uppercase tracking-widest text-neutral-600 hover:text-neutral-900 font-bold">
-                Back to Sign In
-              </Link>
             </div>
-          </div>
-        )}
 
-      </div>
+            <button
+              type="submit"
+              disabled={isSendingCode}
+              className="w-full h-11 bg-neutral-900 text-white text-xs uppercase tracking-widest font-bold rounded-xs hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isSendingCode ? 'animate-spin' : ''}`} />
+              <span>{isSendingCode ? 'Sending Code...' : 'Send Verification Code'}</span>
+            </button>
+          </form>
+
+          <div className="pt-2 border-t border-neutral-100 text-center">
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest text-neutral-600 hover:text-neutral-900 font-medium"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Sign In</span>
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

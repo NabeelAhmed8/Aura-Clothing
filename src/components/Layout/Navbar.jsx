@@ -8,6 +8,8 @@ export default function Navbar() {
   const cart = useCartStore((state) => state.cart) || [];
   const toggleCart = useCartStore((state) => state.toggleCart);
   const user = useCartStore((state) => state.user);
+  const setUser = useCartStore((state) => state.setUser);
+  const showToast = useCartStore((state) => state.showToast);
   const location = useLocation();
 
   const totalItems = Array.isArray(cart) ? cart.reduce((sum, item) => sum + (item.quantity || 1), 0) : 0;
@@ -56,6 +58,13 @@ export default function Navbar() {
         behavior: 'smooth'
       });
     }
+  };
+
+  const handleMobileLogout = () => {
+    setIsMobileMenuOpen(false);
+    setUser(null);
+    showToast('Logged out successfully.');
+    navigate('/login');
   };
 
   const handleSearchSubmit = (e) => {
@@ -238,14 +247,53 @@ export default function Navbar() {
             >
               Lookbook
             </Link>
-            <Link 
-              to={user ? "/profile?tab=profile" : "/login"} 
-              onClick={() => setIsMobileMenuOpen(false)} 
-              className="hover:text-neutral-500 transition-colors py-2"
-            >
-              {user ? 'My Profile' : 'Sign In / Account'}
-            </Link>
           </nav>
+
+          {/* Mobile Auth Buttons */}
+          {user ? (
+            <div className="pt-2 border-t border-neutral-200 flex flex-col gap-3">
+              <div className="flex items-center gap-2 px-1 text-xs text-neutral-600">
+                <User className="w-3.5 h-3.5 text-neutral-900" />
+                <span className="truncate font-medium text-neutral-900">
+                  {user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : (user.email || 'My Account')}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  to="/profile?tab=profile"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="py-2.5 px-3 bg-neutral-900 text-white text-[11px] uppercase tracking-widest font-bold text-center rounded-xs hover:bg-neutral-800 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <span>My Profile</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleMobileLogout}
+                  className="py-2.5 px-3 border border-neutral-300 text-neutral-700 text-[11px] uppercase tracking-widest font-bold text-center rounded-xs hover:border-neutral-900 hover:text-neutral-900 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-neutral-200 flex flex-col gap-2.5">
+              <Link
+                to="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full py-3 px-4 bg-neutral-900 text-white text-xs uppercase tracking-widest font-bold text-center rounded-xs hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2 shadow-xs"
+              >
+                <User className="w-4 h-4" />
+                <span>Sign In</span>
+              </Link>
+              <Link
+                to="/register"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full py-3 px-4 border border-neutral-900 bg-transparent text-neutral-900 text-xs uppercase tracking-widest font-bold text-center rounded-xs hover:bg-neutral-900 hover:text-white transition-all flex items-center justify-center gap-2"
+              >
+                <span>Create Account</span>
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>

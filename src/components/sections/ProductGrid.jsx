@@ -155,11 +155,11 @@ export default function ProductGrid() {
           {products.slice(0, 6).map((product) => {
             const currentQty = quantities[product.id] || 1;
 
-            const isOutOfStock = 
-              product.inStock === false || 
-              product.isOutOfStock === true || 
-              (typeof product.stock === 'number' && product.stock <= 0) || 
-              product.status === 'out_of_stock' || 
+            const isOutOfStock =
+              product.inStock === false ||
+              product.isOutOfStock === true ||
+              (typeof product.stock === 'number' && product.stock <= 0) ||
+              product.status === 'out_of_stock' ||
               product.status === 'sold_out';
 
             return (
@@ -168,7 +168,7 @@ export default function ProductGrid() {
                 className="group relative flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 transition-shadow hover:shadow-sm text-left"
               >
                 {/* Product Image with Lazy Loading & Shimmer */}
-                <div 
+                <div
                   onClick={() => openQuickView(product)}
                   className="relative aspect-3/4 bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img"
                 >
@@ -201,7 +201,7 @@ export default function ProductGrid() {
                     <span className="text-[10px] text-neutral-400 uppercase tracking-wider block">
                       {product.category}
                     </span>
-                    <h3 
+                    <h3
                       onClick={() => openQuickView(product)}
                       className="text-xs font-medium text-neutral-900 line-clamp-2 leading-snug mt-0.5 cursor-pointer hover:underline"
                     >
@@ -255,11 +255,10 @@ export default function ProductGrid() {
                     type="button"
                     disabled={isOutOfStock}
                     onClick={() => handleAddToCartWithQty(product)}
-                    className={`w-full h-9 sm:h-10 py-2.5 px-4 text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-colors rounded-xs flex items-center justify-center text-center ${
-                      isOutOfStock
+                    className={`w-full h-9 sm:h-10 py-2.5 px-4 text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-colors rounded-xs flex items-center justify-center text-center ${isOutOfStock
                         ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
                         : 'bg-neutral-900 text-white hover:bg-neutral-800 cursor-pointer'
-                    }`}
+                      }`}
                   >
                     {isOutOfStock ? 'Out of Stock' : 'Add To Cart'}
                   </button>

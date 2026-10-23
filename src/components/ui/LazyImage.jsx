@@ -104,9 +104,8 @@ export default function LazyImage({
               setHasError(true);
               setIsLoaded(true);
             }}
-            className={`w-full h-full object-cover object-center transition-all duration-700 ease-out ${
-              isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-            } ${className}`}
+            className={`w-full h-full object-cover object-center transition-all duration-700 ease-out ${isLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+              } ${className}`}
           />
         )
       )}
