@@ -1,4 +1,4 @@
-import OtpVerificationCard from '../components/auth/OtpVerificationCard';
+import VerificationLinkSentCard from '../components/auth/VerificationLinkSentCard';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -48,7 +48,7 @@ export default function Login() {
       if (result.requiresVerification || result.verificationRequired) {
         setLoginLinkSent(true);
         setLoginEmail(data.email);
-        showToast('A 6-digit sign-in code has been sent to your email.');
+        showToast('A verification link has been sent to your email.');
         return;
       }
 
@@ -78,19 +78,12 @@ export default function Login() {
   return (
     <div className="flex-1 w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-6 sm:py-12 px-4 sm:px-6">
       {loginLinkSent ? (
-        <OtpVerificationCard
+        <VerificationLinkSentCard
           email={loginEmail}
           title="Sign-In Verification"
-          subtitle="We have sent a 6-digit sign-in code to:"
+          subtitle="We have sent a verification link to:"
           backLabel="← Try another email"
           onBack={() => setLoginLinkSent(false)}
-          onSuccess={(verifiedUser, token) => {
-            if (verifiedUser) {
-              setUser({ ...verifiedUser, token });
-            }
-            showToast('Login successful! Welcome back.');
-            navigate(redirectPath || '/profile');
-          }}
         />
       ) : (
         <div className="w-full max-w-md mx-auto bg-white p-5 sm:p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-left">

@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { CheckCircle2, Mail, ArrowLeft, RefreshCw, KeyRound } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
-import OtpVerificationCard from '../components/auth/OtpVerificationCard';
+import VerificationLinkSentCard from '../components/auth/VerificationLinkSentCard';
 
 export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
@@ -84,7 +84,7 @@ export default function VerifyEmail() {
 
       if (res.ok && data.success) {
         setActiveEmail(trimmed);
-        showToast('6-Digit verification code sent to your email.');
+        showToast('Verification link sent to your email.');
       } else {
         setEmailError(data.error || data.message || 'No account found with this email.');
       }
@@ -127,16 +127,12 @@ export default function VerifyEmail() {
         </div>
       ) : activeEmail ? (
         /* 2. OTP VERIFICATION FORM */
-        <OtpVerificationCard
+        <VerificationLinkSentCard
           email={activeEmail}
           title="Verify Your Account"
-          subtitle="Please enter the 6-digit verification code sent to:"
+          subtitle="A verification link was sent to:"
           backLabel="← Use another email"
           onBack={() => setActiveEmail('')}
-          onSuccess={() => {
-            showToast('Account verified successfully! Welcome to AURA.');
-            navigate(redirectParam);
-          }}
         />
       ) : (
         /* 3. PROMPT FOR EMAIL IF NOT PROVIDED IN URL */
