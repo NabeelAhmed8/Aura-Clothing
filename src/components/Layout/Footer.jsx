@@ -87,7 +87,7 @@ export default function Footer() {
           <h4 className="text-xs uppercase tracking-widest font-bold text-white">Shop</h4>
           <ul className="space-y-2 text-xs text-neutral-400 font-light">
             <li>
-              <Link to="/shop" className="hover:text-white transition-colors">New Arrivals</Link>
+              <Link to="/new-arrivals" className="hover:text-white transition-colors">New Arrivals</Link>
             </li>
             <li>
               <Link to="/shop?category=Women" className="hover:text-white transition-colors">Women's Outerwear</Link>
