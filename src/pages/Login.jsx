@@ -3,10 +3,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { loginSchema } from '../schemas/authSchema';
-import { Eye, EyeOff, Lock, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
 import OtpVerificationCard from '../components/auth/OtpVerificationCard';
+import AuthNoticeBanner from '../components/auth/AuthNoticeBanner';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -122,31 +123,23 @@ export default function Login() {
 
           {/* Email Verified Banner Notice */}
           {isVerifiedParam && (
-            <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xs flex items-center space-x-3 text-left animate-fade-in shadow-2xs">
-              <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
-              <p className="text-xs font-medium text-emerald-800">
-                Email verified successfully! Please enter your password to sign in.
-              </p>
-            </div>
+            <AuthNoticeBanner
+              variant="success"
+              message="Email verified successfully! Please enter your password to sign in."
+            />
           )}
 
           {/* Login Required Notice */}
           {isLoginRequired && !isVerifiedParam && (
-            <div className="bg-amber-50 border border-amber-200 p-3.5 rounded-xs flex items-start space-x-3 text-left animate-fade-in shadow-2xs">
-              <div className="p-1.5 bg-amber-100 text-amber-900 rounded-2xs shrink-0 mt-0.5">
-                <Lock className="w-4 h-4 text-amber-800" />
-              </div>
-              <div className="space-y-0.5">
-                <p className="text-xs font-bold uppercase tracking-wider text-amber-900">
-                  {reasonParam === 'registered' ? 'Welcome Back!' : 'Login Required'}
-                </p>
-                <p className="text-[11px] text-amber-800 leading-relaxed">
-                  {reasonParam === 'registered'
-                    ? 'An existing account was found for your email. Please enter your password to proceed to checkout.'
-                    : 'Please sign in to proceed with your checkout. Your selected cart items are saved and ready.'}
-                </p>
-              </div>
-            </div>
+            <AuthNoticeBanner
+              variant="warning"
+              title={reasonParam === 'registered' ? 'Welcome Back!' : 'Login Required'}
+              message={
+                reasonParam === 'registered'
+                  ? 'An existing account was found for your email. Please enter your password to proceed to checkout.'
+                  : 'Please sign in to proceed with your checkout. Your selected cart items are saved and ready.'
+              }
+            />
           )}
 
           {serverError && (
