@@ -11,12 +11,11 @@ export default function OtpVerificationCard({
   email,
   title = 'Enter Verification Code',
   subtitle,
-  initialOtp = '',
   onSuccess,
   onBack,
   backLabel = '← Back',
 }) {
-  const [otp, setOtp] = useState(initialOtp || '');
+  const [otp, setOtp] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -26,13 +25,6 @@ export default function OtpVerificationCard({
 
   const showToast = useCartStore((state) => state.showToast);
   const setUser = useCartStore((state) => state.setUser);
-
-  // Sync initialOtp if it updates
-  useEffect(() => {
-    if (initialOtp) {
-      setOtp(initialOtp);
-    }
-  }, [initialOtp]);
 
   // Auto-focus input on mount
   useEffect(() => {
@@ -137,12 +129,7 @@ export default function OtpVerificationCard({
 
       setResendCountdown(45); // 45 seconds cooldown
       setResendSuccessMsg('A new 6-digit code has been sent to your email.');
-      if (data.debugOtp) {
-        setOtp(data.debugOtp);
-        showToast(`Verification code: ${data.debugOtp}`);
-      } else {
-        showToast('New verification code sent to your email.');
-      }
+      showToast('New verification code sent to your email.');
     } catch (err) {
       setErrorMessage(err.message || 'Failed to send new code.');
     } finally {
@@ -168,18 +155,6 @@ export default function OtpVerificationCard({
           {email}
         </p>
       </div>
-
-      {initialOtp && (
-        <div className="p-3 bg-amber-50 border border-amber-200 text-amber-900 text-xs rounded-xs text-left space-y-1">
-          <p className="font-semibold flex items-center gap-1.5 text-amber-800">
-            <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
-            <span>Test Mode / Fallback OTP:</span>
-          </p>
-          <p className="text-[11px] text-amber-700">
-            Code: <strong className="font-mono text-sm tracking-widest text-amber-950 bg-amber-100/80 px-1.5 py-0.5 rounded">{initialOtp}</strong> (Auto-detected). Click Verify below to continue.
-          </p>
-        </div>
-      )}
 
       {/* Error / Resend Messages */}
       {errorMessage && (

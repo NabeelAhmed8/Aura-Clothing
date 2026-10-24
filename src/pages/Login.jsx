@@ -19,7 +19,6 @@ export default function Login() {
   const [serverError, setServerError] = useState('');
   const [loginLinkSent, setLoginLinkSent] = useState(false);
   const [loginEmail, setLoginEmail] = useState('');
-  const [debugOtp, setDebugOtp] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const showToast = useCartStore((state) => state.showToast);
@@ -49,12 +48,7 @@ export default function Login() {
       if (result.requiresVerification || result.verificationRequired) {
         setLoginLinkSent(true);
         setLoginEmail(data.email);
-        if (result.debugOtp) {
-          setDebugOtp(result.debugOtp);
-          showToast(`Sign-in code: ${result.debugOtp}`);
-        } else {
-          showToast('A 6-digit sign-in code has been sent to your email.');
-        }
+        showToast('A 6-digit sign-in code has been sent to your email.');
         return;
       }
 
@@ -86,7 +80,6 @@ export default function Login() {
       {loginLinkSent ? (
         <OtpVerificationCard
           email={loginEmail}
-          initialOtp={debugOtp}
           title="Sign-In Verification"
           subtitle="We have sent a 6-digit sign-in code to:"
           backLabel="← Try another email"
