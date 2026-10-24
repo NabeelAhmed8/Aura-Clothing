@@ -2,7 +2,7 @@ import OtpVerificationCard from '../components/auth/OtpVerificationCard';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
 
