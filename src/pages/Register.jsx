@@ -19,6 +19,7 @@ export default function Register() {
   const [serverError, setServerError] = useState('');
   const [isSuccessRegistered, setIsSuccessRegistered] = useState(false);
   const [registeredEmail, setRegisteredEmail] = useState('');
+  const [debugOtp, setDebugOtp] = useState('');
   const showToast = useCartStore((state) => state.showToast);
   const setUser = useCartStore((state) => state.setUser);
 
@@ -69,10 +70,17 @@ export default function Register() {
         throw new Error(result.error || result.message || 'Registration failed');
       }
 
-      if (result.verificationRequired) {
+      if (result.verificationRequired || result.requiresVerification) {
         setRegisteredEmail(data.email.trim().toLowerCase());
+        if (result.debugOtp) {
+          setDebugOtp(result.debugOtp);
+        }
         setIsSuccessRegistered(true);
-        showToast('Verification code sent to your email.');
+        if (result.debugOtp) {
+          showToast(`Verification code: ${result.debugOtp}`);
+        } else {
+          showToast('Verification code sent to your email.');
+        }
         return;
       }
 
@@ -99,13 +107,17 @@ export default function Register() {
       {isSuccessRegistered ? (
         <OtpVerificationCard
           email={registeredEmail}
+          initialOtp={debugOtp}
           title="Verify Your Account"
           subtitle="We have sent a 6-digit verification code to:"
           backLabel="← Back to Sign In"
           onBack={() => navigate('/login')}
-          onSuccess={() => {
+          onSuccess={(verifiedUser, token) => {
+            if (verifiedUser) {
+              setUser({ ...verifiedUser, token });
+            }
             showToast('Account verified successfully! Welcome to AURA.');
-            navigate(redirectPath);
+            navigate(redirectPath || '/profile');
           }}
         />
       ) : (
