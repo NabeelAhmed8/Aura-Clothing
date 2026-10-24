@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { CheckCircle2, Mail, ArrowLeft, RefreshCw, KeyRound } from 'lucide-react';
+import { CheckCircle2, ArrowLeft, RefreshCw, KeyRound } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
 import VerificationLinkSentCard from '../components/auth/VerificationLinkSentCard';

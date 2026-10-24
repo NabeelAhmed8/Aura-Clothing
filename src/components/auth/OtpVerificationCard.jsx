@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Mail, ArrowLeft, RefreshCw, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, RefreshCw, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
 import { useCartStore } from '../../store/useCartStore';
 

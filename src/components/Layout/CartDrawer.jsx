@@ -19,13 +19,17 @@ export default function CartDrawer() {
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   const [checkEmailError, setCheckEmailError] = useState('');
 
+  const handleClose = () => {
+    setShowEmailPrompt(false);
+    setCheckEmailError('');
+    toggleCart();
+  };
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
-      setShowEmailPrompt(false);
-      setCheckEmailError('');
     }
     return () => {
       document.body.style.overflow = 'unset';
@@ -92,7 +96,7 @@ export default function CartDrawer() {
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
-        onClick={toggleCart}
+        onClick={handleClose}
       />
 
       {/* Sliding Drawer Container */}
@@ -119,7 +123,7 @@ export default function CartDrawer() {
           </div>
           <button
             type="button"
-            onClick={toggleCart}
+            onClick={handleClose}
             className="text-neutral-500 hover:text-neutral-900 p-1 cursor-pointer transition-colors"
             aria-label="Close Cart"
           >
