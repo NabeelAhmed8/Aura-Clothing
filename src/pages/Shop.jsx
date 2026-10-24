@@ -149,7 +149,7 @@ export default function Shop() {
   });
 
   return (
-    <div className="-mt-4 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
+    <div className="-mt-4 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       <main className="w-full px-4 sm:px-6 lg:px-10 py-16">
         {/* Page Header */}
         <div ref={shopHeaderRef} className="text-center max-w-2xl mx-auto mb-14 space-y-3 scroll-mt-24">

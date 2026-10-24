@@ -54,8 +54,8 @@ export default function App() {
       <Toast />
       
 
-      {/* Main Page Content (pt-20 navbar offset ke liye) */}
-      <main className="min-h-screen pt-20">
+      {/* Main Page Content (pt-20 navbar offset ke liye, flex-1 to prevent bottom white space) */}
+      <main className="pt-20 flex-1 flex flex-col w-full">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />

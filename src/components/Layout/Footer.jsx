@@ -67,7 +67,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-neutral-900 text-white border-t border-neutral-800">
+    <footer className="w-full bg-neutral-900 text-white border-t border-neutral-800 mt-auto pb-[env(safe-area-inset-bottom,0px)]">
       <div className="w-full px-6 sm:px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
         
         <div className="space-y-4">
@@ -168,7 +168,7 @@ export default function Footer() {
 
       </div>
 
-      <div className="w-full px-6 sm:px-8 py-6 border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-[10px] text-neutral-500 uppercase tracking-widest">
+      <div className="w-full px-6 sm:px-8 py-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] border-t border-neutral-800 flex flex-col sm:flex-row items-center justify-between text-[10px] text-neutral-500 uppercase tracking-widest">
         <p>&copy; 2026 AURA | Independent Luxury Studio. All rights reserved.</p>
         <div className="flex space-x-6 mt-4 sm:mt-0">
           <Link 

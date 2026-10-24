@@ -6,14 +6,14 @@ import Footer from '../components/Layout/Footer';
 
 export default function Home() {
   return (
-    <div className="bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
+    <div className="bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       {/* Navbar aur AnnouncementBar yahan se mukammal remove kar diye hain */}
-      <main className="w-full">
+      <div className="w-full flex-1">
         <Hero />
         <BrandValues />
         <ProductGrid />
         <Lookbook />
-      </main>
+      </div>
       <Footer />
     </div>
   );
