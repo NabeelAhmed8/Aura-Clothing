@@ -1,4 +1,4 @@
-import VerificationLinkSentCard from '../components/auth/VerificationLinkSentCard';
+import OtpVerificationCard from '../components/auth/OtpVerificationCard';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
@@ -97,12 +97,16 @@ export default function Register() {
   return (
     <div className="flex-1 w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-6 sm:py-12 px-4 sm:px-6">
       {isSuccessRegistered ? (
-        <VerificationLinkSentCard
+        <OtpVerificationCard
           email={registeredEmail}
           title="Verify Your Account"
-          subtitle="We have sent a verification link to:"
-          backLabel="← Back to Sign In"
-          onBack={() => navigate('/login')}
+          subtitle="We have sent a 6-digit verification code to:"
+          onSuccess={() => {
+            showToast('Account verified successfully! Please sign in with your email and password.');
+            navigate(`/login?email=${encodeURIComponent(registeredEmail)}&verified=true&redirect=${encodeURIComponent(redirectPath)}`);
+          }}
+          onBack={() => setIsSuccessRegistered(false)}
+          backLabel="← Change Email / Back"
         />
       ) : (
         <div className="w-full max-w-md mx-auto bg-white p-5 sm:p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-left">

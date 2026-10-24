@@ -85,7 +85,7 @@ export default function OtpVerificationCard({
         throw new Error(data.error || data.message || 'Invalid verification code.');
       }
 
-      if (data.user) {
+      if (data.token && data.user) {
         setUser({
           ...data.user,
           token: data.token,

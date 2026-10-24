@@ -1,12 +1,12 @@
-import VerificationLinkSentCard from '../components/auth/VerificationLinkSentCard';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { loginSchema } from '../schemas/authSchema';
-import { Eye, EyeOff, Lock } from 'lucide-react';
+import { Eye, EyeOff, Lock, CheckCircle2 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
+import OtpVerificationCard from '../components/auth/OtpVerificationCard';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -14,11 +14,14 @@ export default function Login() {
   const redirectPath = searchParams.get('redirect') || '/profile';
   const emailParam = searchParams.get('email') || '';
   const reasonParam = searchParams.get('reason');
+  const isVerifiedParam = searchParams.get('verified') === 'true';
   const isLoginRequired = searchParams.get('message') === 'login_required' || redirectPath === '/checkout' || reasonParam === 'registered';
 
   const [serverError, setServerError] = useState('');
-  const [loginLinkSent, setLoginLinkSent] = useState(false);
-  const [loginEmail, setLoginEmail] = useState('');
+  const [showOtpCard, setShowOtpCard] = useState(false);
+  const [otpCardTitle, setOtpCardTitle] = useState('Sign-In Verification');
+  const [otpCardSubtitle, setOtpCardSubtitle] = useState('We sent a 6-digit code to:');
+  const [loginEmail, setLoginEmail] = useState(emailParam);
   const [showPassword, setShowPassword] = useState(false);
 
   const showToast = useCartStore((state) => state.showToast);
@@ -39,16 +42,30 @@ export default function Login() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify(data),
       });
 
       const result = await response.json();
 
+      // Check if user is not verified yet
       if (result.requiresVerification || result.verificationRequired) {
-        setLoginLinkSent(true);
         setLoginEmail(data.email);
-        showToast('A verification link has been sent to your email.');
+        setOtpCardTitle('Verify Your Email');
+        setOtpCardSubtitle('Please verify your email address. We sent a 6-digit code to:');
+        setShowOtpCard(true);
+        showToast(result.message || 'Please verify your email address before logging in.');
+        return;
+      }
+
+      // Check if login requires 2FA OTP code (sent via Resend)
+      if (result.requiresLoginOtp || result.requiresOtp) {
+        setLoginEmail(data.email);
+        setOtpCardTitle('Sign-In Verification');
+        setOtpCardSubtitle('A sign-in code was sent to your email. Enter the 6-digit code:');
+        setShowOtpCard(true);
+        showToast('6-digit sign-in code sent to your email.');
         return;
       }
 
@@ -56,6 +73,7 @@ export default function Login() {
         throw new Error(result.error || result.message || 'Invalid email or password');
       }
 
+      // If server returned direct login (fallback)
       const userProfileData = result.user || {
         firstName: result.firstName || 'User',
         lastName: result.lastName || '',
@@ -66,7 +84,10 @@ export default function Login() {
         addresses: result.addresses || []
       };
 
-      setUser(userProfileData);
+      setUser({
+        ...userProfileData,
+        token: result.token
+      });
 
       showToast('Login successful! Welcome back.');
       navigate(redirectPath);
@@ -77,13 +98,20 @@ export default function Login() {
 
   return (
     <div className="flex-1 w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-6 sm:py-12 px-4 sm:px-6">
-      {loginLinkSent ? (
-        <VerificationLinkSentCard
+      {showOtpCard ? (
+        <OtpVerificationCard
           email={loginEmail}
-          title="Sign-In Verification"
-          subtitle="We have sent a verification link to:"
-          backLabel="← Try another email"
-          onBack={() => setLoginLinkSent(false)}
+          title={otpCardTitle}
+          subtitle={otpCardSubtitle}
+          onSuccess={(user, token) => {
+            if (user) {
+              setUser({ ...user, token });
+            }
+            showToast('Login successful! Welcome back to AURA.');
+            navigate(redirectPath);
+          }}
+          onBack={() => setShowOtpCard(false)}
+          backLabel="← Back to Sign In"
         />
       ) : (
         <div className="w-full max-w-md mx-auto bg-white p-5 sm:p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-left">
@@ -92,8 +120,18 @@ export default function Login() {
             <p className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Sign in to your account</p>
           </div>
 
+          {/* Email Verified Banner Notice */}
+          {isVerifiedParam && (
+            <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xs flex items-center space-x-3 text-left animate-fade-in shadow-2xs">
+              <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+              <p className="text-xs font-medium text-emerald-800">
+                Email verified successfully! Please enter your password to sign in.
+              </p>
+            </div>
+          )}
+
           {/* Login Required Notice */}
-          {isLoginRequired && (
+          {isLoginRequired && !isVerifiedParam && (
             <div className="bg-amber-50 border border-amber-200 p-3.5 rounded-xs flex items-start space-x-3 text-left animate-fade-in shadow-2xs">
               <div className="p-1.5 bg-amber-100 text-amber-900 rounded-2xs shrink-0 mt-0.5">
                 <Lock className="w-4 h-4 text-amber-800" />
