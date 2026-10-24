@@ -35,7 +35,7 @@ export default function Hero() {
           </Link>
         </div>
       </div>
-      <div className="lg:col-span-6 relative overflow-hidden bg-neutral-200 `aspect-4/5` rounded-sm">
+      <div className="lg:col-span-6 relative overflow-hidden bg-neutral-200 aspect-4/5 rounded-sm">
         <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1200&auto=format&fit=crop" alt="Hero Editorial" className="hero-image w-full h-full object-cover" />
       </div>
     </section>

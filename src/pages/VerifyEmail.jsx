@@ -96,7 +96,7 @@ export default function VerifyEmail() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-16 px-6">
+    <div className="flex-1 w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-10 sm:py-16 px-4 sm:px-6">
       {/* 1. SUCCESS STATE (from legacy URL redirect) */}
       {status === 'success' ? (
         <div className="w-full max-w-md mx-auto bg-white p-8 sm:p-10 border border-neutral-200 shadow-sm rounded-sm text-center space-y-6 animate-fade-in">

@@ -76,8 +76,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#F9F9F8] flex flex-col justify-start mt-4 pb-4 px-6 space-y-3">
-
+    <div className="flex-1 w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-6 sm:py-12 px-4 sm:px-6">
       {loginLinkSent ? (
         <OtpVerificationCard
           email={loginEmail}
@@ -91,7 +90,7 @@ export default function Login() {
           }}
         />
       ) : (
-        <div className="w-full max-w-md mx-auto bg-white p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6">
+        <div className="w-full max-w-md mx-auto bg-white p-5 sm:p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-left">
           <div className="text-center space-y-2">
             <h1 className="text-2xl font-black tracking-widest text-neutral-900">AURA</h1>
             <p className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Sign in to your account</p>
@@ -122,9 +121,9 @@ export default function Login() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-1">
-              <label htmlFor="email" className="text-xs uppercase tracking-widest text-neutral-700 font-medium">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left w-full">
+            <div className="space-y-1 text-left">
+              <label htmlFor="email" className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
                 Email Address
               </label>
               <input
@@ -134,13 +133,13 @@ export default function Login() {
                 autoComplete="email"
                 {...register('email')}
                 placeholder="name@example.com"
-                className="w-full bg-neutral-50 border border-neutral-300 px-4 py-3 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900"
+                className="w-full bg-neutral-50 border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900 rounded-xs text-left"
               />
-              {errors.email && <p className="text-[10px] text-red-600">{errors.email.message}</p>}
+              {errors.email && <p className="text-[10px] text-red-600 mt-1">{errors.email.message}</p>}
             </div>
 
-            <div className="space-y-1 relative">
-              <label htmlFor="password" className="text-xs uppercase tracking-widest text-neutral-700 font-medium">
+            <div className="space-y-1 text-left relative">
+              <label htmlFor="password" className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
                 Password
               </label>
               <div className="relative">
@@ -151,25 +150,25 @@ export default function Login() {
                   autoComplete="current-password"
                   {...register('password')}
                   placeholder="••••••••"
-                  className="w-full bg-neutral-50 border border-neutral-300 px-4 py-3 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900 pr-10"
+                  className="w-full bg-neutral-50 border border-neutral-300 px-3.5 py-2.5 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900 pr-10 rounded-xs text-left"
                 />
                 <button
                   type="button"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   aria-pressed={showPassword}
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-900 cursor-pointer p-1"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              {errors.password && <p className="text-[10px] text-red-600">{errors.password.message}</p>}
+              {errors.password && <p className="text-[10px] text-red-600 mt-1">{errors.password.message}</p>}
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-neutral-900 text-white py-3.5 sm:py-4 px-6 min-h-11 text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center text-center"
+              className="w-full bg-neutral-900 text-white py-3.5 sm:py-4 px-6 min-h-11 text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center text-center rounded-xs mt-2"
             >
               {isSubmitting ? 'Signing In...' : 'Sign In'}
             </button>
@@ -177,19 +176,19 @@ export default function Login() {
         </div>
       )}
 
-      <div className="text-center pt-4 border-t border-neutral-100 mt-4">
-        <p className="text-xs text-neutral-500 uppercase tracking-wider">
+      <div className="w-full max-w-md mx-auto text-center pt-4 border-t border-neutral-200 mt-4">
+        <p className="text-xs text-neutral-600">
           Don't have an account?{' '}
           <Link
             to={`/register?redirect=${encodeURIComponent(redirectPath)}${emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''}`}
-            className="text-neutral-900 font-bold hover:underline"
+            className="text-neutral-900 font-bold hover:underline ml-1"
           >
             Create Account
           </Link>
         </p>
       </div>
 
-      <div className="text-center text-[10px] text-neutral-400 uppercase tracking-widest">
+      <div className="text-center text-[10px] text-neutral-400 uppercase tracking-widest mt-2">
         &copy; 2026 AURA | Independent Luxury Studio. All rights reserved.
       </div>
     </div>
