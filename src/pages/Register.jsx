@@ -214,10 +214,10 @@ export default function Register() {
                   className="w-full bg-neutral-50 border border-neutral-300 px-3 py-2 text-xs text-neutral-950 focus:outline-none focus:border-neutral-900"
                 >
                   <option value="">Select Gender</option>
-                  <option value="female">Female</option>
-                  <option value="male">Male</option>
-                  <option value="other">Other</option>
-                  <option value="prefer_not_to_say">Prefer not to say</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Other">Other</option>
+                  <option value="Other">Prefer not to say</option>
                 </select>
               </div>
             </div>
