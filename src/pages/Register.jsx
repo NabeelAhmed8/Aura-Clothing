@@ -2,7 +2,7 @@ import OtpVerificationCard from '../components/auth/OtpVerificationCard';
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
 
@@ -87,16 +87,6 @@ export default function Register() {
 
   return (
     <div className="min-h-screen w-full bg-[#F9F9F8] flex flex-col justify-start mt-4 pb-12 px-6 space-y-3">
-      <div className="w-full max-w-md mx-auto">
-        <Link
-          to="/"
-          aria-label="Back to Home"
-          title="Back to Home"
-          className="inline-flex items-center text-xs text-neutral-600 hover:text-neutral-900 transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-      </div>
 
       {isSuccessRegistered ? (
         <OtpVerificationCard
