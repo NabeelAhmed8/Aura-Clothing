@@ -115,15 +115,17 @@
 }
 
 html {
-  background-color: #171717; /* Dark background matching footer so any mobile overscroll or gap is dark, never white */
+  background-color: #171717; /* Dark background matching footer so any mobile overscroll or bottom gap is seamless dark, never white */
   overscroll-behavior-y: none;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
+  padding: 0;
   width: 100%;
   min-height: 100%;
-  background-color: #F9F9F8;
+  background-color: #171717;
 }
 
 #root {
@@ -132,10 +134,12 @@ body {
   margin: 0;
   text-align: left;
   border-inline: none;
+  min-height: 100%;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  background-color: #171717;
 }
 
 h1,
@@ -232,9 +236,11 @@ code {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background-color: #171717;
   }
   html {
     @apply font-sans;
+    background-color: #171717;
   }
 }

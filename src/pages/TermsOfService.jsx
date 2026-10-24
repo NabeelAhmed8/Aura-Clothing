@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Scale, PackageCheck, RefreshCw, AlertCircle } from 'lucide-react';
-import Footer from '../components/Layout/Footer';
 
 export default function TermsOfService() {
   useEffect(() => {
@@ -9,7 +8,7 @@ export default function TermsOfService() {
   }, []);
 
   return (
-    <div className="pt-2 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
+    <div className="pt-2 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       <main className="w-full px-6 sm:px-12 lg:px-20 pt-6 pb-24 max-w-4xl mx-auto space-y-16">
         
         {/* Page Header */}
@@ -162,8 +161,6 @@ export default function TermsOfService() {
         </div>
 
       </main>
-
-      <Footer />
     </div>
   );
 }

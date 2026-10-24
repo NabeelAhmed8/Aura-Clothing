@@ -2,6 +2,15 @@ import { useEffect } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useCartStore } from './store/useCartStore';
 
+// Layouts & Global Components
+import MainLayout from './components/Layout/MainLayout';
+import ScrollToTop from './components/ScrollToTop';
+import Navbar from './components/Layout/Navbar';
+import CartDrawer from './components/Layout/CartDrawer';
+import QuickViewDrawer from './components/Layout/QuickViewDrawer';
+import Toast from './components/Layout/Toast';
+import BackToHomeButton from './components/Layout/BackToHomeButton';
+
 // Pages
 import Home from './pages/Home';
 import Shop from './pages/Shop';
@@ -18,19 +27,10 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import VerifyEmail from './pages/VerifyEmail';
 
-// Global Components
-import ScrollToTop from './components/ScrollToTop';
-import Navbar from './components/Layout/Navbar';
-import CartDrawer from './components/Layout/CartDrawer';
-import QuickViewDrawer from './components/Layout/QuickViewDrawer';
-import Toast from './components/Layout/Toast';
-import BackToHomeButton from './components/Layout/BackToHomeButton';
-
 export default function App() {
   // Desktop aur Mobile device sync fix
   useEffect(() => {
     const handleStorageChange = (e) => {
-      // Jab bhi cart storage update ho ya refresh ho
       if (e.key === 'aura-cart-storage' || !e.key) {
         if (useCartStore?.persist?.rehydrate) {
           useCartStore.persist.rehydrate();
@@ -52,31 +52,33 @@ export default function App() {
       <CartDrawer />
       <QuickViewDrawer />
       <Toast />
-      
 
       {/* Main Page Content (pt-20 navbar offset ke liye, flex-1 to prevent bottom white space) */}
-      <main className="pt-20 flex-1 flex flex-col w-full">
+      <main className="pt-20 flex-1 flex flex-col w-full bg-[#171717]">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/new-arrivals" element={<NewArrivals />} />
+          {/* Main Layout Pages with unified Footer */}
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/new-arrivals" element={<NewArrivals />} />
+            <Route path="/lookbook" element={<LookbookPage />} />
+            <Route path="/our-story" element={<OurStory />} />
+            <Route path="/sustainability" element={<Sustainability />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+          </Route>
+
+          {/* Standalone Auth & Dashboard Pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/lookbook" element={<LookbookPage />} />
-          <Route path="/our-story" element={<OurStory />} />
-          <Route path="/sustainability" element={<Sustainability />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/checkout" element={<Checkout />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
-
-          {/* Fallback 404 Route */}
         </Routes>
       </main>
 
-      {/* Floating Buttons & Footer */}
+      {/* Floating Back-To-Home Button */}
       <BackToHomeButton />
     </HashRouter>
   );

@@ -3,7 +3,6 @@ import { useCartStore } from '../store/useCartStore';
 import { useQuickViewStore } from '../store/useQuickViewStore';
 import { Eye } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
-import Footer from '../components/Layout/Footer';
 import LazyImage from '../components/ui/LazyImage';
 import { getCachedData, setCachedData } from '../utils/productCache';
 
@@ -272,8 +271,6 @@ export default function LookbookPage() {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

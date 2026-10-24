@@ -14,7 +14,6 @@ import {
   Banknote,
   UserCheck,
 } from 'lucide-react';
-import Footer from '../components/Layout/Footer';
 import { API_BASE_URL } from '../config/api';
 
 import OrderSuccessView from '../components/checkout/OrderSuccessView';
@@ -693,15 +692,14 @@ export default function Checkout() {
 
   if (!user) {
     return (
-      <div className="pt-2 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans flex flex-col justify-between">
+      <div className="pt-2 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans flex flex-col justify-between">
         <AccountIdentificationGateway />
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="pt-2 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative">
+    <div className="pt-2 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative">
       <main className="max-w-6xl mx-auto px-6 sm:px-12 py-10 space-y-8">
         <div className="text-center space-y-2">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">
@@ -720,7 +718,6 @@ export default function Checkout() {
           <CheckoutFormContent key={user?.email || user?._id || 'guest'} />
         )}
       </main>
-      <Footer />
     </div>
   );
 }

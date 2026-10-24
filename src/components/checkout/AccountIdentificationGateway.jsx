@@ -35,7 +35,7 @@ export default function AccountIdentificationGateway() {
   };
 
   return (
-    <div className="pt-2 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans flex flex-col justify-between">
+    <div className="pt-2 bg-[#F9F9F8] flex-1 flex flex-col justify-between w-full text-neutral-900 font-sans">
       <main className="max-w-md mx-auto px-6 py-16 space-y-6 text-center w-full my-auto">
         <div className="w-14 h-14 bg-white border border-neutral-200 rounded-full flex items-center justify-center mx-auto shadow-xs text-neutral-900">
           <Lock className="w-6 h-6" />

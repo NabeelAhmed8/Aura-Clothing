@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { MessageSquare, Mail, MapPin, Clock, Send, CheckCircle2, HelpCircle } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
-import Footer from '../components/Layout/Footer';
 
 export default function Contact() {
   const showToast = useCartStore((state) => state.showToast);
@@ -404,8 +403,6 @@ export default function Contact() {
         </section>
 
       </main>
-
-      <Footer />
     </div>
   );
 }

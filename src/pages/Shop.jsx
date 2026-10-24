@@ -5,7 +5,6 @@ import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ui/ProductCard';
 import ProductSkeletonGrid from '../components/ui/ProductSkeletonGrid';
 import ProductErrorState from '../components/ui/ProductErrorState';
-import Footer from '../components/Layout/Footer';
 
 const CATEGORIES = ['All', 'Men', 'Women', 'Accessories'];
 
@@ -160,8 +159,6 @@ export default function Shop() {
           </>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 }

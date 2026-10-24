@@ -67,7 +67,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-neutral-900 text-white border-t border-neutral-800 mt-auto pb-[env(safe-area-inset-bottom,0px)]">
+    <footer className="w-full bg-neutral-900 text-white border-t border-neutral-800 mt-auto">
       <div className="w-full px-6 sm:px-8 py-16 grid grid-cols-1 md:grid-cols-4 gap-12">
         
         <div className="space-y-4">
