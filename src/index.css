@@ -244,3 +244,29 @@ code {
     background-color: #171717;
   }
 }
+
+/* Custom Luxury Scrollbar for AURA AI Chatbot & Overlays */
+.aura-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  scroll-behavior: smooth;
+}
+
+.aura-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.aura-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.aura-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+  transition: background 0.2s ease-in-out;
+}
+
+.aura-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(251, 191, 36, 0.5); /* AURA subtle luxury amber/gold hover */
+}

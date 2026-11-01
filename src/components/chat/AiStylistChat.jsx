@@ -105,6 +105,19 @@ export default function AiStylistChat() {
     }
   }, [isOpen, isMinimized]);
 
+  // Freeze root/body scrollbar when AI chatbot is open
+  useEffect(() => {
+    if (isOpen && !isMinimized) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, isMinimized]);
+
   const handleOpenChat = () => {
     setIsOpen(true);
     setIsMinimized(false);
@@ -377,7 +390,7 @@ export default function AiStylistChat() {
 
                 {/* Dropdown Options */}
                 {showModelPicker && (
-                  <div className="absolute right-0 top-6 mt-1 w-60 max-h-56 overflow-y-auto bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl z-50 p-1 divide-y divide-neutral-800">
+                  <div className="absolute right-0 top-6 mt-1 w-60 max-h-56 overflow-y-auto aura-scrollbar bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl z-50 p-1 divide-y divide-neutral-800">
                     <div className="px-2 py-1 text-[9px] uppercase tracking-wider text-neutral-400 font-semibold">
                       Select Generation (v1.0 to v4)
                     </div>
@@ -421,7 +434,7 @@ export default function AiStylistChat() {
                 </div>
               )}
 
-              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3.5 text-xs">
+              <div className="flex-1 overflow-y-auto aura-scrollbar px-4 py-3 space-y-3.5 text-xs">
                 {messages.map((msg) => {
                   const isUser = msg.role === 'user';
                   return (
