@@ -15,7 +15,7 @@ export default function BackToHomeButton() {
       className="fixed z-45 select-none pointer-events-auto"
       style={{
         bottom: 'max(1.25rem, calc(1rem + env(safe-area-inset-bottom, 0px)))',
-        right: 'max(1rem, calc(0.75rem + env(safe-area-inset-right, 0px)))',
+        left: 'max(1rem, calc(0.75rem + env(safe-area-inset-left, 0px)))',
       }}
     >
       <Link

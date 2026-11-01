@@ -10,6 +10,7 @@ import CartDrawer from './components/Layout/CartDrawer';
 import QuickViewDrawer from './components/Layout/QuickViewDrawer';
 import Toast from './components/Layout/Toast';
 import BackToHomeButton from './components/Layout/BackToHomeButton';
+import AiStylistChat from './components/chat/AiStylistChat';
 
 // Pages
 import Home from './pages/Home';
@@ -78,8 +79,11 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Floating Back-To-Home Button */}
+      {/* Floating Back-To-Home Button (Bottom-Left) */}
       <BackToHomeButton />
+
+      {/* Floating AURA AI Stylist Concierge (Bottom-Right) */}
+      <AiStylistChat />
     </HashRouter>
   );
 }
