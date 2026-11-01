@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   Sparkles,
-  MessageSquare,
   X,
   Send,
   RotateCcw,
@@ -9,10 +8,8 @@ import {
   ChevronUp,
   ChevronDown,
   Bot,
-  User,
   AlertCircle,
-  Cpu,
-  Layers
+  Cpu
 } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
 
@@ -35,12 +32,26 @@ const QUICK_PROMPTS = [
   '📦 What is your exchange & return policy?'
 ];
 
+let messageIdSequence = 0;
+function createChatMessage(role, text, modelLabel = null) {
+  messageIdSequence += 1;
+  const now = new Date();
+  const timeFormatted = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return {
+    id: `msg-${messageIdSequence}-${role}`,
+    role,
+    text,
+    modelLabel,
+    timestamp: timeFormatted
+  };
+}
+
 const INITIAL_MESSAGE = {
   id: 'init-1',
   role: 'model',
   text: 'Welcome to AURA. I am your personal AI Fashion Stylist & Concierge.\n\nPowered by Google Gemini (from Gemini 1.0 to Gemini 4 Argon). How can I curate your wardrobe today?',
   modelLabel: 'Gemini 4 Argon',
-  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  timestamp: '12:00'
 };
 
 export default function AiStylistChat() {
@@ -81,13 +92,9 @@ export default function AiStylistChat() {
   }, []);
 
   // Auto-scroll to bottom of messages
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
     if (isOpen && !isMinimized) {
-      scrollToBottom();
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen, isMinimized, isLoading]);
 
@@ -95,21 +102,29 @@ export default function AiStylistChat() {
   useEffect(() => {
     if (isOpen && !isMinimized) {
       setTimeout(() => inputRef.current?.focus(), 150);
-      setUnreadCount(0);
     }
   }, [isOpen, isMinimized]);
+
+  const handleOpenChat = () => {
+    setIsOpen(true);
+    setIsMinimized(false);
+    setUnreadCount(0);
+  };
+
+  const handleToggleMinimize = () => {
+    setIsMinimized(prev => {
+      const next = !prev;
+      if (!next) setUnreadCount(0);
+      return next;
+    });
+  };
 
   const handleSendMessage = async (textToSend) => {
     const message = (textToSend || inputMessage).trim();
     if (!message || isLoading) return;
 
     setErrorBanner('');
-    const userMsg = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      text: message,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
+    const userMsg = createChatMessage('user', message);
 
     const updatedHistory = [...messages, userMsg];
     setMessages(updatedHistory);
@@ -143,23 +158,19 @@ export default function AiStylistChat() {
           setErrorBanner('Gemini API key backend .env file mein set nahi hai.');
           setMessages(prev => [
             ...prev,
-            {
-              id: `err-${Date.now()}`,
-              role: 'model',
-              text: '⚠️ **Gemini API Key Required**\n\nGoogle Gemini API key backend ki `.env` file mein set nahi hai.\n\nBackend `.env` file open karein aur `GEMINI_API_KEY=your_key` add karein, phir backend restart karein.',
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }
+            createChatMessage(
+              'model',
+              '⚠️ **Gemini API Key Required**\n\nGoogle Gemini API key backend ki `.env` file mein set nahi hai.\n\nBackend `.env` file open karein aur `GEMINI_API_KEY=your_key` add karein, phir backend restart karein.'
+            )
           ]);
         } else {
           setErrorBanner(data.message || 'Error communicating with AI Stylist.');
           setMessages(prev => [
             ...prev,
-            {
-              id: `err-${Date.now()}`,
-              role: 'model',
-              text: `⚠️ Maaf kijiye: ${data.message || 'Please try again.'}`,
-              timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            }
+            createChatMessage(
+              'model',
+              `⚠️ Maaf kijiye: ${data.message || 'Please try again.'}`
+            )
           ]);
         }
         return;
@@ -169,13 +180,7 @@ export default function AiStylistChat() {
         name: data.modelUsed || selectedModel
       };
 
-      const botReply = {
-        id: `bot-${Date.now()}`,
-        role: 'model',
-        text: data.reply,
-        modelLabel: activeModelObj.name,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
+      const botReply = createChatMessage('model', data.reply, activeModelObj.name);
 
       setMessages(prev => [...prev, botReply]);
 
@@ -187,12 +192,10 @@ export default function AiStylistChat() {
       setErrorBanner('Backend server se connect nahi ho saka. Ensure backend port 5001 is running.');
       setMessages(prev => [
         ...prev,
-        {
-          id: `err-${Date.now()}`,
-          role: 'model',
-          text: '⚠️ Backend server se connect nahi ho saka. Barah-e-karam check karein ke backend (Port 5001) chal raha hai.',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }
+        createChatMessage(
+          'model',
+          '⚠️ Backend server se connect nahi ho saka. Barah-e-karam check karein ke backend (Port 5001) chal raha hai.'
+        )
       ]);
     } finally {
       setIsLoading(false);
@@ -211,7 +214,7 @@ export default function AiStylistChat() {
     setErrorBanner('');
   };
 
-  // Helper to render markdown formatting cleanly
+  // Helper to render basic markdown bold and bullet lists
   const renderFormattedText = (rawText) => {
     const lines = rawText.split('\n');
     return lines.map((line, idx) => {
@@ -261,10 +264,7 @@ export default function AiStylistChat() {
           }}
         >
           <button
-            onClick={() => {
-              setIsOpen(true);
-              setIsMinimized(false);
-            }}
+            onClick={handleOpenChat}
             className="group relative flex items-center gap-2.5 px-4 py-3 rounded-full bg-neutral-900/95 text-white border border-neutral-700/80 shadow-[0_12px_35px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-300 hover:scale-105 hover:bg-neutral-800 hover:border-neutral-600 active:scale-95 cursor-pointer focus:outline-none focus:ring-2 focus:ring-neutral-400"
             title="Open AURA AI Stylist"
             aria-label="Open AURA AI Stylist"
@@ -297,7 +297,7 @@ export default function AiStylistChat() {
           className={`fixed z-50 transition-all duration-300 flex flex-col bg-neutral-950 border border-neutral-800 text-neutral-100 shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-xl ${
             isMinimized
               ? 'w-72 h-14 rounded-2xl'
-              : 'w-[94vw] sm:w-[420px] h-[600px] max-h-[85vh] rounded-3xl'
+              : 'w-[94vw] sm:w-105 h-150 max-h-[85vh] rounded-3xl'
           } overflow-hidden`}
           style={{
             bottom: 'max(1.25rem, calc(1rem + env(safe-area-inset-bottom, 0px)))',
@@ -338,7 +338,7 @@ export default function AiStylistChat() {
                 </button>
               )}
               <button
-                onClick={() => setIsMinimized(!isMinimized)}
+                onClick={handleToggleMinimize}
                 className="p-1.5 hover:text-white hover:bg-neutral-800/80 rounded-lg transition-colors cursor-pointer"
                 title={isMinimized ? 'Expand Chat' : 'Minimize Chat'}
                 aria-label={isMinimized ? 'Expand Chat' : 'Minimize Chat'}
@@ -371,7 +371,7 @@ export default function AiStylistChat() {
                   onClick={() => setShowModelPicker(!showModelPicker)}
                   className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-neutral-800/90 hover:bg-neutral-700/90 border border-neutral-700/70 text-neutral-200 text-[10px] font-medium transition-all cursor-pointer"
                 >
-                  <span className="truncate max-w-[140px]">{currentModelObj.name}</span>
+                  <span className="truncate max-w-35">{currentModelObj.name}</span>
                   <ChevronDown className={`w-3 h-3 transition-transform ${showModelPicker ? 'rotate-180' : ''}`} />
                 </button>
 
