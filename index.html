@@ -15,6 +15,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <title>AURA | Independent Luxury Studio</title>
+
+    <!-- GitHub Pages Single Page Apps Redirect Restoration Script (Clean URLs without #) -->
+    <script type="text/javascript">
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) { 
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+              l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
   </head>
   <body class="bg-[#171717] text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white antialiased">
     <div id="root"></div>

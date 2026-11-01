@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useCartStore } from './store/useCartStore';
 
 // Layouts & Global Components
@@ -44,7 +44,7 @@ export default function App() {
   }, []);
 
   return (
-    <HashRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       {/* Scroll fix on route change */}
       <ScrollToTop />
 
@@ -84,6 +84,6 @@ export default function App() {
 
       {/* Floating AURA AI Stylist Concierge (Bottom-Right) */}
       <AiStylistChat />
-    </HashRouter>
+    </BrowserRouter>
   );
 }
