@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import { Lock, CheckCircle2 } from 'lucide-react';
 
-/**
- * Single Responsibility: Renders standard authentication alert/notice banners.
- */
 export default function AuthNoticeBanner({
   variant = 'warning',
   title,

@@ -69,10 +69,8 @@ export default function CartDrawer() {
       setShowEmailPrompt(false);
 
       if (data.isRegistered) {
-        // Registered User -> Go to Login page with email pre-filled
         navigate(`/login?email=${encodeURIComponent(trimmed)}&redirect=/checkout&reason=registered`);
       } else {
-        // Unregistered / New User -> Go to Register page with email pre-filled
         navigate(`/register?email=${encodeURIComponent(trimmed)}&redirect=/checkout&reason=new_user`);
       }
     } catch (err) {
@@ -93,13 +91,11 @@ export default function CartDrawer() {
         maxHeight: '100dvh',
       }}
     >
-      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300"
         onClick={handleClose}
       />
 
-      {/* Sliding Drawer Container */}
       <div
         className="fixed top-0 bottom-0 right-0 w-full sm:max-w-md flex flex-col bg-[#F9F9F8] shadow-2xl border-l border-neutral-200 z-10 overflow-hidden"
         style={{
@@ -108,7 +104,6 @@ export default function CartDrawer() {
         }}
       >
 
-        {/* Header */}
         <div
           className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-neutral-200 bg-white shrink-0"
           style={{
@@ -131,7 +126,6 @@ export default function CartDrawer() {
           </button>
         </div>
 
-        {/* Scrollable Items List */}
         <div
           className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 sm:px-5 py-3 space-y-2.5"
           style={{
@@ -169,7 +163,6 @@ export default function CartDrawer() {
                   )}
 
                   <div className="flex justify-between items-center pt-2">
-                    {/* Quantity Selector */}
                     <div className="flex items-center border border-neutral-200 rounded-2xs bg-neutral-50">
                       <button
                         type="button"
@@ -202,7 +195,6 @@ export default function CartDrawer() {
           )}
         </div>
 
-        {/* Footer */}
         {cart.length > 0 && (
           <div
             className="border-t border-neutral-200 px-4 sm:px-6 pt-3 bg-white space-y-2.5 shrink-0 shadow-lg"
@@ -219,7 +211,6 @@ export default function CartDrawer() {
               Taxes and complimentary express delivery calculated at checkout.
             </p>
 
-            {/* Smart Checkout Flow: If guest, ask for email right here */}
             {showEmailPrompt ? (
               <form onSubmit={handleVerifyEmailAndNavigate} className="space-y-2.5 pt-1 text-left animate-fade-in border-t border-neutral-100">
                 <div className="flex items-center justify-between">

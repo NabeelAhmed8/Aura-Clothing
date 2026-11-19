@@ -7,7 +7,7 @@ import LazyImage from './LazyImage';
 export default function ProductCard({
   product,
   aspectRatio = 'aspect-4/5',
-  badgeStyle = 'floating', // 'floating' | 'inline'
+  badgeStyle = 'floating', 
 }) {
   const addToCart = useCartStore((state) => state.addToCart);
   const openQuickView = useQuickViewStore((state) => state.openQuickView);
@@ -34,7 +34,6 @@ export default function ProductCard({
 
   return (
     <div className="group relative flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 hover:border-neutral-400 transition-all hover:shadow-xs text-left">
-      {/* Product Image with Quick View Hover */}
       <div
         onClick={() => openQuickView(product)}
         className={`relative ${aspectRatio} bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img`}
@@ -47,21 +46,18 @@ export default function ProductCard({
           className="transition-transform duration-500 group-hover:scale-105"
         />
 
-        {/* Floating Category Badge */}
         {badgeStyle === 'floating' && product.category && (
           <div className="absolute top-2 left-2 bg-neutral-900/80 backdrop-blur-xs text-white px-2 py-0.5 text-[9px] uppercase tracking-wider font-semibold rounded-xs">
             {product.category}
           </div>
         )}
 
-        {/* Out of Stock Badge */}
         {isOutOfStock && (
           <div className="absolute top-2 right-2 bg-rose-900/90 text-white text-[9px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-xs shadow-xs">
             Sold Out
           </div>
         )}
 
-        {/* Quick View Hover Overlay */}
         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-2">
           <span className="bg-white/95 text-neutral-900 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-xs shadow-md flex items-center gap-1.5 hover:bg-neutral-900 hover:text-white transition-colors">
             <Eye className="w-3 h-3" />
@@ -70,7 +66,6 @@ export default function ProductCard({
         </div>
       </div>
 
-      {/* Product Info */}
       <div className="mt-2.5 flex flex-col flex-1 justify-between space-y-1.5">
         <div>
           {badgeStyle === 'inline' && product.category && (
@@ -102,7 +97,6 @@ export default function ProductCard({
         </div>
       </div>
 
-      {/* Quantity Stepper & Add to Cart Controls */}
       <div className="mt-2.5 pt-2 border-t border-neutral-100 flex flex-col gap-1.5">
         <div
           className={`flex items-center justify-between border border-neutral-200 rounded-xs bg-neutral-50 h-9 sm:h-10 ${

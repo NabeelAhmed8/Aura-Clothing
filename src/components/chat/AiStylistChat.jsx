@@ -69,7 +69,6 @@ export default function AiStylistChat() {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Fetch available models from backend
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/ai/models`)
       .then(res => res.json())
@@ -87,25 +86,21 @@ export default function AiStylistChat() {
         }
       })
       .catch(() => {
-        // Fallback to DEFAULT_MODELS
       });
   }, []);
 
-  // Auto-scroll to bottom of messages
   useEffect(() => {
     if (isOpen && !isMinimized) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isOpen, isMinimized, isLoading]);
 
-  // Focus input when opened
   useEffect(() => {
     if (isOpen && !isMinimized) {
       setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [isOpen, isMinimized]);
 
-  // Freeze root/body scrollbar when AI chatbot is open
   useEffect(() => {
     if (isOpen && !isMinimized) {
       document.body.style.overflow = 'hidden';
@@ -168,12 +163,12 @@ export default function AiStylistChat() {
 
       if (!response.ok || !data.success) {
         if (data.code === 'API_KEY_NOT_CONFIGURED') {
-          setErrorBanner('Gemini API key backend .env file mein set nahi hai.');
+          setErrorBanner('AI service is temporarily unconfigured.');
           setMessages(prev => [
             ...prev,
             createChatMessage(
               'model',
-              '⚠️ **Gemini API Key Required**\n\nGoogle Gemini API key backend ki `.env` file mein set nahi hai.\n\nBackend `.env` file open karein aur `GEMINI_API_KEY=your_key` add karein, phir backend restart karein.'
+              '⚠️ **Service Notice**\n\nThe AI Fashion Stylist service is currently being configured. Please check back shortly.'
             )
           ]);
         } else {
@@ -182,7 +177,7 @@ export default function AiStylistChat() {
             ...prev,
             createChatMessage(
               'model',
-              `⚠️ Maaf kijiye: ${data.message || 'Please try again.'}`
+              `⚠️ Unable to process request: ${data.message || 'Please try again.'}`
             )
           ]);
         }
@@ -202,12 +197,12 @@ export default function AiStylistChat() {
       }
     } catch (err) {
       console.error('Chat error:', err);
-      setErrorBanner('Backend server se connect nahi ho saka. Ensure backend port 5001 is running.');
+      setErrorBanner('Unable to connect. Please check your connection and try again.');
       setMessages(prev => [
         ...prev,
         createChatMessage(
           'model',
-          '⚠️ Backend server se connect nahi ho saka. Barah-e-karam check karein ke backend (Port 5001) chal raha hai.'
+          '⚠️ Unable to connect right now. Please check your connection and try again.'
         )
       ]);
     } finally {
@@ -227,7 +222,6 @@ export default function AiStylistChat() {
     setErrorBanner('');
   };
 
-  // Helper to render basic markdown bold and bullet lists
   const renderFormattedText = (rawText) => {
     const lines = rawText.split('\n');
     return lines.map((line, idx) => {
@@ -266,7 +260,6 @@ export default function AiStylistChat() {
 
   return (
     <>
-      {/* Floating Trigger Button */}
       {!isOpen && (
         <aside
           aria-label="AURA AI Stylist Trigger"
@@ -282,7 +275,6 @@ export default function AiStylistChat() {
             title="Open AURA AI Stylist"
             aria-label="Open AURA AI Stylist"
           >
-            {/* Pulsing indicator */}
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
@@ -293,7 +285,6 @@ export default function AiStylistChat() {
               AURA Stylist
             </span>
 
-            {/* Unread badge */}
             {unreadCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-neutral-950 text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md">
                 {unreadCount}
@@ -303,7 +294,6 @@ export default function AiStylistChat() {
         </aside>
       )}
 
-      {/* Floating Chat Modal */}
       {isOpen && (
         <section
           aria-label="AURA AI Fashion Stylist Concierge"
@@ -317,7 +307,6 @@ export default function AiStylistChat() {
             right: 'max(1.25rem, calc(1rem + env(safe-area-inset-right, 0px)))'
           }}
         >
-          {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-neutral-900/90 border-b border-neutral-800/80 backdrop-blur-md select-none">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-amber-300 shadow-sm">
@@ -338,7 +327,6 @@ export default function AiStylistChat() {
               </div>
             </div>
 
-            {/* Header Actions */}
             <div className="flex items-center gap-1 text-neutral-400">
               {!isMinimized && (
                 <button
@@ -369,7 +357,6 @@ export default function AiStylistChat() {
             </div>
           </div>
 
-          {/* Model Switcher Bar (Gemini 1.0 to Gemini 4 Argon) */}
           {!isMinimized && (
             <div className="relative px-3.5 py-1.5 bg-neutral-900/60 border-b border-neutral-800/60 flex items-center justify-between text-[11px]">
               <div className="flex items-center gap-1.5 text-neutral-400">
@@ -388,7 +375,6 @@ export default function AiStylistChat() {
                   <ChevronDown className={`w-3 h-3 transition-transform ${showModelPicker ? 'rotate-180' : ''}`} />
                 </button>
 
-                {/* Dropdown Options */}
                 {showModelPicker && (
                   <div className="absolute right-0 top-6 mt-1 w-60 max-h-56 overflow-y-auto aura-scrollbar bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl z-50 p-1 divide-y divide-neutral-800">
                     <div className="px-2 py-1 text-[9px] uppercase tracking-wider text-neutral-400 font-semibold">
@@ -424,7 +410,6 @@ export default function AiStylistChat() {
             </div>
           )}
 
-          {/* Body & Messages */}
           {!isMinimized && (
             <>
               {errorBanner && (
@@ -473,7 +458,6 @@ export default function AiStylistChat() {
                   );
                 })}
 
-                {/* Thinking / Loading indicator */}
                 {isLoading && (
                   <div className="flex flex-col items-start">
                     <div className="flex items-center gap-1 mb-1 px-1">
@@ -496,7 +480,6 @@ export default function AiStylistChat() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Quick Prompts */}
               {messages.length <= 1 && (
                 <div className="px-3 pb-2 pt-1 border-t border-neutral-900/80">
                   <p className="text-[10px] uppercase tracking-wider text-neutral-400 mb-1.5 px-1 font-semibold">
@@ -516,7 +499,6 @@ export default function AiStylistChat() {
                 </div>
               )}
 
-              {/* Chat Input */}
               <div className="p-3 bg-neutral-900/95 border-t border-neutral-800/80">
                 <form
                   onSubmit={(e) => {

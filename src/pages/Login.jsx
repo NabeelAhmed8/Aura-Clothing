@@ -50,7 +50,6 @@ export default function Login() {
 
       const result = await response.json();
 
-      // Check if user is not verified yet
       if (result.requiresVerification || result.verificationRequired) {
         setLoginEmail(data.email);
         setOtpCardTitle('Verify Your Email');
@@ -60,7 +59,6 @@ export default function Login() {
         return;
       }
 
-      // Check if login requires 2FA OTP code (sent via Resend)
       if (result.requiresLoginOtp || result.requiresOtp) {
         setLoginEmail(data.email);
         setOtpCardTitle('Sign-In Verification');
@@ -74,7 +72,6 @@ export default function Login() {
         throw new Error(result.error || result.message || 'Invalid email or password');
       }
 
-      // If server returned direct login (fallback)
       const userProfileData = result.user || {
         firstName: result.firstName || 'User',
         lastName: result.lastName || '',
@@ -121,7 +118,6 @@ export default function Login() {
             <p className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Sign in to your account</p>
           </div>
 
-          {/* Email Verified Banner Notice */}
           {isVerifiedParam && (
             <AuthNoticeBanner
               variant="success"
@@ -129,7 +125,6 @@ export default function Login() {
             />
           )}
 
-          {/* Login Required Notice */}
           {isLoginRequired && !isVerifiedParam && (
             <AuthNoticeBanner
               variant="warning"

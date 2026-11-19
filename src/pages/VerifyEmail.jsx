@@ -11,7 +11,7 @@ export default function VerifyEmail() {
   const showToast = useCartStore((state) => state.showToast);
   const setUser = useCartStore((state) => state.setUser);
 
-  const status = searchParams.get('status'); // 'success' or 'failed'
+  const status = searchParams.get('status'); 
   const emailParam = searchParams.get('email') || '';
   const tokenParam = searchParams.get('token');
   const redirectParam = searchParams.get('redirect') || '/profile';
@@ -22,7 +22,6 @@ export default function VerifyEmail() {
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [emailError, setEmailError] = useState('');
 
-  // Handle legacy/link successful verification
   useEffect(() => {
     if (status !== 'success' || !emailParam) return;
 
@@ -97,7 +96,6 @@ export default function VerifyEmail() {
 
   return (
     <div className="flex-1 w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-10 sm:py-16 px-4 sm:px-6">
-      {/* 1. SUCCESS STATE (from legacy URL redirect) */}
       {status === 'success' ? (
         <div className="w-full max-w-md mx-auto bg-white p-8 sm:p-10 border border-neutral-200 shadow-sm rounded-sm text-center space-y-6 animate-fade-in">
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
@@ -126,7 +124,6 @@ export default function VerifyEmail() {
           </div>
         </div>
       ) : activeEmail ? (
-        /* 2. OTP VERIFICATION FORM */
         <VerificationLinkSentCard
           email={activeEmail}
           title="Verify Your Account"
@@ -135,7 +132,6 @@ export default function VerifyEmail() {
           onBack={() => setActiveEmail('')}
         />
       ) : (
-        /* 3. PROMPT FOR EMAIL IF NOT PROVIDED IN URL */
         <div className="w-full max-w-md mx-auto bg-white p-8 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-center animate-fade-in">
           <div className="w-14 h-14 bg-neutral-100 text-neutral-900 rounded-full flex items-center justify-center mx-auto border border-neutral-200">
             <KeyRound className="w-7 h-7" />

@@ -46,7 +46,6 @@ export default function CheckoutSummary({
         </div>
       </div>
 
-      {/* Action Button: Requires Login */}
       {!user ? (
         <div className="space-y-2.5">
           <Link

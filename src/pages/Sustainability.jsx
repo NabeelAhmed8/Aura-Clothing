@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Leaf, Recycle, Droplets, Globe, CheckCircle2 } from 'lucide-react';
 
 export default function Sustainability() {
-  // Page load hone par bilkul top par smooth scroll kare
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }, []);
@@ -13,7 +12,6 @@ export default function Sustainability() {
       <main className="w-full px-6 sm:px-12 lg:px-20 pt-6 pb-24 max-w-6xl mx-auto space-y-20">
         
 
-        {/* Hero Section */}
         <section className=" text-center max-w-3xl mx-auto space-y-4">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold block">
             Conscious Luxury & Ecology
@@ -26,7 +24,6 @@ export default function Sustainability() {
           </p>
         </section>
 
-        {/* Visual Banner */}
         <section className="relative w-full aspect-video md:aspect-21/9 bg-neutral-200 overflow-hidden rounded-sm border border-neutral-200">
           <img 
             src="https://plus.unsplash.com/premium_photo-1673502751757-cfdc48a4904d?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
@@ -40,7 +37,6 @@ export default function Sustainability() {
           </div>
         </section>
 
-        {/* Core Environmental Pillars */}
         <section className="space-y-12">
           <div className="text-center space-y-2">
             <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold">Our Commitments</span>
@@ -84,7 +80,6 @@ export default function Sustainability() {
           </div>
         </section>
 
-        {/* Narrative / Lifecycle Metrics */}
         <section className="bg-white border border-neutral-200 p-8 sm:p-12 rounded-sm grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-neutral-200 text-center items-stretch">
           <div className="flex min-h-36 flex-col items-center justify-center gap-2 py-6 md:py-0 md:px-6">
             <p className="h-12 flex items-center text-3xl sm:text-4xl font-light text-neutral-900">84%</p>
@@ -103,7 +98,6 @@ export default function Sustainability() {
           </div>
         </section>
 
-        {/* Detailed Standards Checklist */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div className="space-y-4">
             <span className="text-[10px] uppercase tracking-widest text-neutral-400 font-semibold">
@@ -132,7 +126,6 @@ export default function Sustainability() {
           </div>
         </section>
 
-        {/* Call to Action */}
         <section className="bg-white border border-neutral-200 p-8 sm:p-14 rounded-sm space-y-6 flex flex-col items-center justify-center text-center">
           <h3 className="text-xl sm:text-2xl font-light uppercase tracking-wider text-neutral-900 text-center w-full">
             EXPLORE OUR CONSCIOUS COLLECTION

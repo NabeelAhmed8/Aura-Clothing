@@ -3,10 +3,6 @@ import { Mail, ArrowLeft, RefreshCw, Loader2, ExternalLink, CheckCircle2 } from 
 import { API_BASE_URL } from '../../config/api';
 import { useCartStore } from '../../store/useCartStore';
 
-/**
- * Reusable Luxury Email Verification Link Sent Card
- * Replaces the OTP code input with a clean, modern "Check your email" link state.
- */
 export default function VerificationLinkSentCard({
   email,
   title = 'Check Your Email',
@@ -21,7 +17,6 @@ export default function VerificationLinkSentCard({
 
   const showToast = useCartStore((state) => state.showToast);
 
-  // 30s Countdown timer for Resend button
   useEffect(() => {
     if (resendCountdown <= 0) return;
     const timer = setInterval(() => {
@@ -55,7 +50,7 @@ export default function VerificationLinkSentCard({
         throw new Error(data.error || data.message || 'Failed to resend verification link.');
       }
 
-      setResendCountdown(45); // 45 seconds cooldown
+      setResendCountdown(45); 
       setResendSuccessMsg('A fresh verification link has been sent to your email.');
       showToast('Fresh verification link sent to your email.');
     } catch (err) {
@@ -65,7 +60,6 @@ export default function VerificationLinkSentCard({
     }
   };
 
-  // Determine webmail shortcut
   const isGmail = email.toLowerCase().includes('gmail.com');
   const isOutlook = email.toLowerCase().includes('outlook.com') || email.toLowerCase().includes('hotmail.com');
   const webmailUrl = isGmail
@@ -76,12 +70,10 @@ export default function VerificationLinkSentCard({
 
   return (
     <div className="w-full max-w-md mx-auto bg-white p-6 sm:p-8 border border-neutral-200 shadow-sm rounded-sm text-center animate-fade-in">
-      {/* Mail Animated Icon Header */}
       <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-neutral-900 text-white flex items-center justify-center shadow-md">
         <Mail className="w-8 h-8 text-white" />
       </div>
 
-      {/* Brand Title */}
       <h1 className="text-2xl font-black tracking-widest text-neutral-900 uppercase">
         AURA
       </h1>
@@ -89,7 +81,6 @@ export default function VerificationLinkSentCard({
         {title}
       </h2>
 
-      {/* Subtitle & User Email */}
       <p className="text-xs text-neutral-500 mt-2">
         {subtitle}
       </p>
@@ -97,7 +88,6 @@ export default function VerificationLinkSentCard({
         {email}
       </div>
 
-      {/* Instructional Message */}
       <div className="my-6 p-4 bg-neutral-50 border border-neutral-200 rounded-sm text-left text-xs text-neutral-600 leading-relaxed space-y-2">
         <div className="flex items-start gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -108,7 +98,6 @@ export default function VerificationLinkSentCard({
         </div>
       </div>
 
-      {/* Open Webmail Shortcut Button */}
       {webmailUrl && (
         <a
           href={webmailUrl}
@@ -121,7 +110,6 @@ export default function VerificationLinkSentCard({
         </a>
       )}
 
-      {/* Resend Success / Error Alerts */}
       {resendSuccessMsg && (
         <div className="mb-4 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs rounded-xs text-center font-medium">
           {resendSuccessMsg}
@@ -134,7 +122,6 @@ export default function VerificationLinkSentCard({
         </div>
       )}
 
-      {/* Resend Link Button */}
       <div className="pt-2 border-t border-neutral-100">
         <button
           type="button"
@@ -160,7 +147,6 @@ export default function VerificationLinkSentCard({
         </button>
       </div>
 
-      {/* Back to Login / Change Email Link */}
       {onBack && (
         <div className="mt-4 pt-3 border-t border-neutral-100">
           <button

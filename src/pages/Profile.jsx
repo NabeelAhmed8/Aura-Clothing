@@ -36,7 +36,6 @@ export default function Profile() {
     }
   }, [user, navigate]);
 
-  // Sync latest user profile on mount
   const userEmail = user?.email;
   useEffect(() => {
     if (!userEmail) return;
@@ -71,7 +70,6 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen w-full bg-[#F9F9F8] flex flex-col items-center justify-start -mt-16 pb-16 px-4 sm:px-8 pt-28 space-y-8 relative">
-      {/* Top Header */}
       <div className="max-w-5xl w-full mx-auto flex items-center justify-end">
         <button
           type="button"
@@ -83,9 +81,7 @@ export default function Profile() {
         </button>
       </div>
 
-      {/* Main Container */}
       <div className="max-w-5xl w-full mx-auto bg-white border border-neutral-200 shadow-sm rounded-sm grid grid-cols-1 md:grid-cols-4 overflow-hidden items-stretch">
-        {/* Sidebar Tabs */}
         <div className="bg-neutral-50 border-r border-neutral-200 p-6 flex flex-col justify-between space-y-6 w-full">
           <div className="space-y-6">
             <div className="flex items-center space-x-3 pb-6 border-b border-neutral-200 text-left">
@@ -130,7 +126,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Tab Content Panel */}
         <div className="md:col-span-3 p-6 sm:p-10 space-y-6 text-left">
           {activeTab === 'profile' && (
             <ProfileInfoTab key={user?.email || 'user'} user={user} setUser={setUser} showToast={showToast} />

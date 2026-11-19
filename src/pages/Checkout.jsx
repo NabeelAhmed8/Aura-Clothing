@@ -290,7 +290,6 @@ function CheckoutFormContent() {
       autoComplete="on"
       className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12"
     >
-      {/* Auth Gate Banner for Guests */}
       {!user && (
         <div className="lg:col-span-12 bg-white border border-neutral-900/15 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in text-left">
           <div className="flex items-start space-x-3.5">
@@ -328,9 +327,7 @@ function CheckoutFormContent() {
         </div>
       )}
 
-      {/* LEFT COLUMN: Delivery Details & Payment Method */}
       <div className="lg:col-span-7 space-y-8 text-left">
-        {/* 1. Delivery Details */}
         <div className="bg-white border border-neutral-200 p-6 sm:p-8 space-y-6 text-left">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4 border-b border-neutral-100 pb-3 min-w-0">
             <h3 className="text-xs uppercase tracking-widest font-bold text-neutral-900 shrink-0">
@@ -354,7 +351,6 @@ function CheckoutFormContent() {
             )}
           </div>
 
-          {/* Quick Saved Address Picker */}
           {Array.isArray(user?.addresses) && user.addresses.length > 0 && (
             <div className="bg-neutral-50 border border-neutral-200 p-3.5 rounded-xs space-y-2 text-left">
               <div className="flex items-center justify-between">
@@ -496,7 +492,6 @@ function CheckoutFormContent() {
           </div>
         </div>
 
-        {/* 2. Payment Method */}
         <div className="bg-white border border-neutral-200 p-6 sm:p-8 space-y-6 text-left">
           <div className="border-b border-neutral-100 pb-3 flex items-center justify-between">
             <h3 className="text-xs uppercase tracking-widest font-bold text-neutral-900">
@@ -508,7 +503,6 @@ function CheckoutFormContent() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            {/* Stripe Card Option */}
             <div
               onClick={() => setPaymentMethod('Stripe')}
               className={`p-4 border rounded-xs cursor-pointer transition-all ${
@@ -546,7 +540,6 @@ function CheckoutFormContent() {
               </div>
             </div>
 
-            {/* Cash on Delivery Option */}
             <div
               onClick={() => setPaymentMethod('Cash on Delivery')}
               className={`p-4 border rounded-xs cursor-pointer transition-all ${
@@ -581,7 +574,6 @@ function CheckoutFormContent() {
             </div>
           </div>
 
-          {/* Stripe Card Element Input Box */}
           {paymentMethod === 'Stripe' && (
             <div className="space-y-3 pt-2 animate-fade-in">
               <div className="flex items-center justify-between">
@@ -632,7 +624,6 @@ function CheckoutFormContent() {
             </div>
           )}
 
-          {/* Delivery Notice */}
           <div className="pt-2 border-t border-neutral-100">
             <div className="p-3.5 bg-[#F9F9F8] border border-neutral-200 rounded-xs flex items-start space-x-3 text-left">
               <div className="p-2 bg-neutral-900 text-white rounded-xs shrink-0 mt-0.5">
@@ -649,7 +640,6 @@ function CheckoutFormContent() {
             </div>
           </div>
 
-          {/* Form Error Alert */}
           {formError && (
             <div className="w-full pt-1 animate-fade-in">
               <div className="w-full bg-red-50 text-red-700 text-xs tracking-wide px-4 py-3 rounded-xs border border-red-200 flex items-center justify-between">
@@ -670,7 +660,6 @@ function CheckoutFormContent() {
         </div>
       </div>
 
-      {/* RIGHT COLUMN: Order Summary */}
       <CheckoutSummary
         cart={cart}
         cartTotal={cartTotal}

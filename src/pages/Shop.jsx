@@ -21,7 +21,6 @@ export default function Shop() {
     cacheKey: 'all_products',
   });
 
-  // Reset pagination when category or search changes
   const filterKey = `${selectedCategory}_${searchQuery}`;
   const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
   if (prevFilterKey !== filterKey) {
@@ -70,7 +69,6 @@ export default function Shop() {
   return (
     <div className="-mt-4 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       <main className="w-full px-4 sm:px-6 lg:px-10 py-16">
-        {/* Page Header */}
         <div ref={shopHeaderRef} className="text-center max-w-2xl mx-auto mb-14 space-y-3 scroll-mt-24">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">Catalog 2026</span>
           <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-neutral-900">THE SHOP</h1>
@@ -79,7 +77,6 @@ export default function Shop() {
           </p>
         </div>
 
-        {/* Category Filters */}
         <div
           role="tablist"
           aria-label="Product categories"
@@ -106,7 +103,6 @@ export default function Shop() {
           })}
         </div>
 
-        {/* Active Search Filter Banner */}
         {searchQuery && (
           <div className="flex items-center justify-center gap-2 mb-10 text-xs text-neutral-600 bg-neutral-100 py-2.5 px-4 rounded-xs max-w-md mx-auto border border-neutral-200">
             <span>
@@ -126,11 +122,10 @@ export default function Shop() {
           </div>
         )}
 
-        {/* Products Grid / States */}
         {loading ? (
           <ProductSkeletonGrid count={12} aspectRatio="aspect-4/5" />
         ) : error ? (
-          <ProductErrorState error={error} onRetry={refetch} />
+          <ProductErrorState onRetry={refetch} />
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-20 text-neutral-500 text-xs uppercase tracking-widest">
             No products found in this category.
@@ -143,7 +138,6 @@ export default function Shop() {
               ))}
             </div>
 
-            {/* Progressive Loading Controls */}
             {visibleCount < filteredProducts.length && (
               <div className="text-center mt-12 mb-4">
                 <button

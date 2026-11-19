@@ -4,7 +4,6 @@ import { ArrowLeft } from 'lucide-react';
 export default function BackToHomeButton() {
   const location = useLocation();
 
-  // Agar user already home page ("/") par ho toh button hide rahega
   if (location.pathname === '/') {
     return null;
   }

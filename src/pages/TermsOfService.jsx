@@ -11,7 +11,6 @@ export default function TermsOfService() {
     <div className="pt-2 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       <main className="w-full px-6 sm:px-12 lg:px-20 pt-6 pb-24 max-w-4xl mx-auto space-y-16">
         
-        {/* Page Header */}
         <section className="text-center max-w-3xl mx-auto space-y-4">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold block">
             Agreements & Conditions
@@ -24,7 +23,6 @@ export default function TermsOfService() {
           </p>
         </section>
 
-        {/* Key Guarantees Badges */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 border-y border-neutral-200 py-8 text-left">
           <div className="flex items-start gap-3">
             <PackageCheck className="w-5 h-5 text-neutral-900 shrink-0 mt-0.5" />
@@ -56,10 +54,8 @@ export default function TermsOfService() {
           </div>
         </div>
 
-        {/* Terms Content Sections */}
         <div className="space-y-12 text-left text-xs sm:text-sm text-neutral-700 font-light leading-relaxed">
           
-          {/* Section 1 */}
           <section className="space-y-3">
             <h2 className="text-base sm:text-lg uppercase tracking-wider font-semibold text-neutral-900 flex items-center gap-2">
               <span className="text-neutral-400 font-mono text-xs">01.</span>
@@ -70,7 +66,6 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          {/* Section 2 */}
           <section className="space-y-3">
             <h2 className="text-base sm:text-lg uppercase tracking-wider font-semibold text-neutral-900 flex items-center gap-2">
               <span className="text-neutral-400 font-mono text-xs">02.</span>
@@ -84,7 +79,6 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          {/* Section 3 */}
           <section className="space-y-3">
             <h2 className="text-base sm:text-lg uppercase tracking-wider font-semibold text-neutral-900 flex items-center gap-2">
               <span className="text-neutral-400 font-mono text-xs">03.</span>
@@ -98,7 +92,6 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          {/* Section 4 */}
           <section className="space-y-3">
             <h2 className="text-base sm:text-lg uppercase tracking-wider font-semibold text-neutral-900 flex items-center gap-2">
               <span className="text-neutral-400 font-mono text-xs">04.</span>
@@ -112,7 +105,6 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          {/* Section 5 */}
           <section className="space-y-3">
             <h2 className="text-base sm:text-lg uppercase tracking-wider font-semibold text-neutral-900 flex items-center gap-2">
               <span className="text-neutral-400 font-mono text-xs">05.</span>
@@ -131,7 +123,6 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          {/* Section 6 */}
           <section className="space-y-3">
             <h2 className="text-base sm:text-lg uppercase tracking-wider font-semibold text-neutral-900 flex items-center gap-2">
               <span className="text-neutral-400 font-mono text-xs">06.</span>
@@ -142,7 +133,6 @@ export default function TermsOfService() {
             </p>
           </section>
 
-          {/* Section 7 */}
           <section className="space-y-3 border-t border-neutral-200 pt-8">
             <h2 className="text-base sm:text-lg uppercase tracking-wider font-semibold text-neutral-900 flex items-center gap-2">
               <span className="text-neutral-400 font-mono text-xs">07.</span>

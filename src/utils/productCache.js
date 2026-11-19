@@ -1,5 +1,5 @@
 const memoryCache = new Map();
-const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes
+const CACHE_TTL_MS = 3 * 60 * 1000; 
 
 export const getCachedData = (key) => {
   const cached = memoryCache.get(key);

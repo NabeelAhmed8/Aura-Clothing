@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { Sparkles, Feather, ShieldCheck, Compass } from 'lucide-react';
 
 export default function OurStory() {
-  // Page load hone par bilkul top par scroll kare
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }, []);
@@ -13,7 +12,6 @@ export default function OurStory() {
       <main className="w-full px-6 sm:px-12 lg:px-20 pt-6 pb-24 max-w-6xl mx-auto space-y-20">
         
 
-        {/* Hero Section */}
         <section className="text-center max-w-3xl mx-auto space-y-4">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold block">
             The Philosophy & Heritage
@@ -26,7 +24,6 @@ export default function OurStory() {
           </p>
         </section>
 
-        {/* Studio Showcase / Visual Banner */}
         <section className="relative w-full aspect-video md:aspect-21/9 bg-neutral-200 overflow-hidden rounded-sm border border-neutral-200">
           <img 
             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1800&q=80" 
@@ -40,7 +37,6 @@ export default function OurStory() {
           </div>
         </section>
 
-        {/* Narrative / About Text */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-start border-t border-b border-neutral-200 py-16">
           <div className="space-y-4">
             <span className="text-[10px] uppercase tracking-widest text-neutral-400 font-semibold">
@@ -60,7 +56,6 @@ export default function OurStory() {
           </div>
         </section>
 
-        {/* Core Pillars / Values */}
         <section className="space-y-12">
           <div className="text-center space-y-2">
             <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold">Our Principles</span>
@@ -112,7 +107,6 @@ export default function OurStory() {
           </div>
         </section>
 
-        {/* Call to Action */}
         <section className="bg-white border border-neutral-200 p-8 sm:p-14 rounded-sm space-y-6 flex flex-col items-center justify-center text-center">
   <h3 className="text-xl sm:text-2xl font-light uppercase tracking-wider text-neutral-900 text-center w-full">
     DISCOVER THE LATEST CAPSULE

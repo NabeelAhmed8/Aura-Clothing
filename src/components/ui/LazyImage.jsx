@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 
-/**
- * Helper to optimize external Unsplash images for thumbnails/grid
- */
 const optimizeImageUrl = (url, targetWidth = 600) => {
   if (!url || typeof url !== 'string') return url;
   if (url.includes('images.unsplash.com')) {
@@ -19,14 +16,6 @@ const optimizeImageUrl = (url, targetWidth = 600) => {
   return url;
 };
 
-/**
- * High-performance LazyImage Component
- * - Intersection Observer based lazy loading (loads 200px before viewport)
- * - Shimmer skeleton placeholder while loading
- * - Smooth fade-in transition once loaded
- * - Automatic Unsplash image optimization
- * - Fallback handling on error
- */
 export default function LazyImage({
   src,
   alt = 'Product image',
@@ -57,7 +46,7 @@ export default function LazyImage({
         }
       },
       {
-        rootMargin: '200px 0px', // Start loading 200px before scrolling into view
+        rootMargin: '200px 0px', 
         threshold: 0.01,
       }
     );
@@ -81,18 +70,15 @@ export default function LazyImage({
       onClick={onClick}
       className={`relative overflow-hidden bg-neutral-100 ${aspectRatio} ${wrapperClassName}`}
     >
-      {/* 1. Shimmer Skeleton Placeholder while loading */}
       {!isLoaded && !hasError && (
         <div className="absolute inset-0 bg-gradient-to-r from-neutral-200 via-neutral-100 to-neutral-200 animate-pulse" />
       )}
 
-      {/* 2. Error Fallback */}
       {hasError ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-100 text-neutral-400 p-2 text-center">
           <span className="text-[10px] uppercase tracking-wider font-medium">Image unavailable</span>
         </div>
       ) : (
-        /* 3. Actual Image */
         isVisible && (
           <img
             src={optimizedSrc}

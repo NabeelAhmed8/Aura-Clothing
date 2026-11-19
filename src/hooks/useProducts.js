@@ -2,10 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { API_BASE_URL } from '../config/api';
 import { getCachedData, setCachedData } from '../utils/productCache';
 
-/**
- * Custom hook to fetch and cache products from backend.
- * Normalizes MongoDB fields (_id -> id, stock fallbacks).
- */
 export function useProducts({ endpoint = '/api/products', cacheKey = 'all_products' } = {}) {
   const [products, setProducts] = useState(() => getCachedData(cacheKey) || []);
   const [loading, setLoading] = useState(() => !getCachedData(cacheKey));
@@ -62,7 +58,7 @@ export function useProducts({ endpoint = '/api/products', cacheKey = 'all_produc
         console.error(`Failed to fetch products from ${endpoint}:`, err);
         if (!getCachedData(cacheKey)) {
           setProducts([]);
-          setError('Server is offline or unavailable. Products cannot be loaded.');
+          setError("We couldn't load the products right now. Please check your connection and try again.");
         }
       } finally {
         setLoading(false);

@@ -3,10 +3,6 @@ import PropTypes from 'prop-types';
 import { useForm, useWatch } from 'react-hook-form';
 import { Eye, EyeOff } from 'lucide-react';
 
-/**
- * Single Responsibility: Handles registration input fields, password visibility toggles,
- * client-side validations, and form submission.
- */
 export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting = false }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -33,7 +29,6 @@ export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 text-left w-full">
-      {/* First Name & Last Name */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
         <div className="space-y-1 text-left">
           <label className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
@@ -64,7 +59,6 @@ export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting
         </div>
       </div>
 
-      {/* Email Address */}
       <div className="space-y-1 text-left">
         <label className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
           Email Address *
@@ -85,7 +79,6 @@ export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting
         {errors.email && <p className="text-[10px] text-red-600 mt-1">{errors.email.message}</p>}
       </div>
 
-      {/* Phone Number */}
       <div className="space-y-1 text-left">
         <label className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
           Phone Number (Optional)
@@ -99,7 +92,6 @@ export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting
         />
       </div>
 
-      {/* Date of Birth & Gender */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
         <div className="space-y-1 text-left">
           <label className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
@@ -130,7 +122,6 @@ export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting
         </div>
       </div>
 
-      {/* Password */}
       <div className="space-y-1 text-left relative">
         <label className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
           Password * (Min 10 characters)
@@ -162,7 +153,6 @@ export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting
         {errors.password && <p className="text-[10px] text-red-600 mt-1">{errors.password.message}</p>}
       </div>
 
-      {/* Confirm Password */}
       <div className="space-y-1 text-left relative">
         <label className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
           Confirm Password *
@@ -191,7 +181,6 @@ export default function RegisterForm({ defaultEmail = '', onSubmit, isSubmitting
         {errors.confirmPassword && <p className="text-[10px] text-red-600 mt-1">{errors.confirmPassword.message}</p>}
       </div>
 
-      {/* Submit Button */}
       <button
         type="submit"
         disabled={isSubmitting}

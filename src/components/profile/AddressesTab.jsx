@@ -217,7 +217,6 @@ export default function AddressesTab({ user, setUser, showToast }) {
         </div>
       )}
 
-      {/* Add Address Modal */}
       {showAddressModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white max-w-lg w-full p-6 sm:p-8 rounded-sm shadow-xl space-y-6 relative animate-fade-in text-left">

@@ -3,10 +3,6 @@ import { Mail, RefreshCw, Loader2, AlertCircle, CheckCircle2 } from 'lucide-reac
 import { API_BASE_URL } from '../../config/api';
 import { useCartStore } from '../../store/useCartStore';
 
-/**
- * Reusable 6-Digit OTP Verification Card
- * Handles code entry, verification API call, resend countdown, and success transition.
- */
 export default function OtpVerificationCard({
   email,
   title = 'Enter Verification Code',
@@ -26,12 +22,10 @@ export default function OtpVerificationCard({
   const showToast = useCartStore((state) => state.showToast);
   const setUser = useCartStore((state) => state.setUser);
 
-  // Auto-focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  // 30s Countdown timer for Resend Code
   useEffect(() => {
     if (resendCountdown <= 0) return;
     const timer = setInterval(() => {
@@ -127,7 +121,7 @@ export default function OtpVerificationCard({
         throw new Error(data.error || data.message || 'Failed to resend code.');
       }
 
-      setResendCountdown(45); // 45 seconds cooldown
+      setResendCountdown(45); 
       setResendSuccessMsg('A new 6-digit code has been sent to your email.');
       showToast('New verification code sent to your email.');
     } catch (err) {
@@ -139,7 +133,6 @@ export default function OtpVerificationCard({
 
   return (
     <div className="w-full max-w-md mx-auto bg-white p-7 sm:p-9 border border-neutral-200 shadow-sm rounded-sm space-y-6 text-center animate-fade-in">
-      {/* Icon & Brand Header */}
       <div className="w-13 h-13 bg-neutral-900 text-white rounded-full flex items-center justify-center mx-auto shadow-xs">
         <Mail className="w-6 h-6" />
       </div>
@@ -156,7 +149,6 @@ export default function OtpVerificationCard({
         </p>
       </div>
 
-      {/* Error / Resend Messages */}
       {errorMessage && (
         <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xs flex items-center gap-2 text-left animate-shake">
           <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
@@ -171,7 +163,6 @@ export default function OtpVerificationCard({
         </div>
       )}
 
-      {/* OTP Input Form */}
       <form onSubmit={handleVerify} className="space-y-4">
         <div className="space-y-1 text-center">
           <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-bold block mb-1">
@@ -211,7 +202,6 @@ export default function OtpVerificationCard({
         </button>
       </form>
 
-      {/* Resend Code Option */}
       <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-xs">
         {onBack ? (
           <button

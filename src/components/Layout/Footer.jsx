@@ -9,16 +9,14 @@ export default function Footer() {
   const showToast = useCartStore((state) => state.showToast);
   const location = useLocation();
 
-  // Agar already usi page par ho toh smooth scroll to top kare
   const handleScrollToTop = (e, targetPath) => {
     if (location.pathname === targetPath) {
-      e.preventDefault(); // Default router behavior roko taake scroll smoothly chale
+      e.preventDefault(); 
       window.scrollTo({
         top: 0,
         left: 0,
         behavior: 'smooth',
       });
-      // Fallback for full cross-browser compatibility
       document.documentElement.scrollTo({
         top: 0,
         behavior: 'smooth',

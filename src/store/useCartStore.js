@@ -8,22 +8,18 @@ export const useCartStore = create(
       isOpen: false,
       user: null,
 
-      // Drawer Open/Close
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
 
-      // Add to Cart
       addToCart: (product, qtyArg) => {
         const currentCart = get().cart;
-        // Normalize ID (_id ya id dono support hon)
         const targetId = product._id || product.id;
 
         const existingIndex = currentCart.findIndex(
           (item) => (item._id || item.id) === targetId
         );
 
-        // Determine added quantity
         let addQty = 1;
         if (typeof qtyArg === 'number' && !isNaN(qtyArg)) {
           addQty = qtyArg;
@@ -49,19 +45,17 @@ export const useCartStore = create(
               ...currentCart,
               {
                 ...product,
-                id: targetId, // Backend Order schema ke mutabiq id normalize
+                id: targetId, 
                 quantity: addQty,
               },
             ],
           });
         }
 
-        // Trigger dynamic toast notification
         const itemText = addQty === 1 ? '1 item' : `${addQty} items`;
         get().showToast(`Added ${itemText} to cart successfully`);
       },
 
-      // Remove from Cart
       removeFromCart: (productId) => {
         set({
           cart: get().cart.filter(
@@ -70,7 +64,6 @@ export const useCartStore = create(
         });
       },
 
-      // Update Quantity
       updateQuantity: (productId, quantity) => {
         if (quantity <= 0) {
           get().removeFromCart(productId);
@@ -85,10 +78,8 @@ export const useCartStore = create(
         });
       },
 
-      // Clear Cart
       clearCart: () => set({ cart: [] }),
 
-      // User State
       setUser: (userOrFn) =>
         set((state) => ({
           user: typeof userOrFn === 'function' ? userOrFn(state.user) : userOrFn,
@@ -157,7 +148,6 @@ export const useCartStore = create(
         return updatedAddresses;
       },
 
-      // Toast Message State
       toastMessage: null,
       _toastTimer: null,
       showToast: (msg) => {
@@ -174,7 +164,6 @@ export const useCartStore = create(
     {
       name: 'aura-cart-storage',
       storage: createJSONStorage(() => localStorage),
-      // Sirf cart aur user ko localStorage mein save karega, isOpen ko nahi
       partialize: (state) => ({ cart: state.cart, user: state.user }),
     }
   )

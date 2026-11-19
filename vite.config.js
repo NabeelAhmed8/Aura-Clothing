@@ -11,6 +11,10 @@ const __dirname = path.dirname(__filename)
 export default defineConfig({
   base: '/Aura-Clothing/',
   plugins: [react(), tailwindcss()],
+  server: {
+    port: 5173,
+    strictPort: true, // Kisi aur port (jaise 5174) pe shift nahi hoga
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

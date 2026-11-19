@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useCartStore } from './store/useCartStore';
 
-// Layouts & Global Components
 import MainLayout from './components/Layout/MainLayout';
 import ScrollToTop from './components/ScrollToTop';
 import Navbar from './components/Layout/Navbar';
@@ -12,7 +11,6 @@ import Toast from './components/Layout/Toast';
 import BackToHomeButton from './components/Layout/BackToHomeButton';
 import AiStylistChat from './components/chat/AiStylistChat';
 
-// Pages
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import Login from './pages/Login';
@@ -29,7 +27,6 @@ import TermsOfService from './pages/TermsOfService';
 import VerifyEmail from './pages/VerifyEmail';
 
 export default function App() {
-  // Desktop aur Mobile device sync fix
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === 'aura-cart-storage' || !e.key) {
@@ -45,19 +42,15 @@ export default function App() {
 
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
-      {/* Scroll fix on route change */}
       <ScrollToTop />
 
-      {/* Global Navigation & Overlays */}
       <Navbar />
       <CartDrawer />
       <QuickViewDrawer />
       <Toast />
 
-      {/* Main Page Content (pt-20 navbar offset ke liye, flex-1 to prevent bottom white space) */}
       <main className="pt-20 flex-1 flex flex-col w-full bg-[#171717]">
         <Routes>
-          {/* Main Layout Pages with unified Footer */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
@@ -71,7 +64,6 @@ export default function App() {
             <Route path="/terms-of-service" element={<TermsOfService />} />
           </Route>
 
-          {/* Standalone Auth & Dashboard Pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
@@ -79,10 +71,8 @@ export default function App() {
         </Routes>
       </main>
 
-      {/* Floating Back-To-Home Button (Bottom-Left) */}
       <BackToHomeButton />
 
-      {/* Floating AURA AI Stylist Concierge (Bottom-Right) */}
       <AiStylistChat />
     </BrowserRouter>
   );

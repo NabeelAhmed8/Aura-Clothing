@@ -4,6 +4,7 @@ import { useQuickViewStore } from '../store/useQuickViewStore';
 import { Eye } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 import LazyImage from '../components/ui/LazyImage';
+import ProductErrorState from '../components/ui/ProductErrorState';
 import { getCachedData, setCachedData } from '../utils/productCache';
 
 export default function LookbookPage() {
@@ -16,10 +17,8 @@ export default function LookbookPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Page header ko target karne ke liye ref
   const lookbookHeaderRef = useRef(null);
 
-  // Jab bhi tab (category) change ho, page smooth tarike se uper Lookbook title par scroll ho
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -78,7 +77,7 @@ export default function LookbookPage() {
         console.error('Failed to fetch outfits from backend:', err);
         if (!cached) {
           setOutfits([]);
-          setError('Server is offline or unavailable. Outfits cannot be loaded.');
+          setError("We couldn't load the lookbook right now. Please check your connection and try again.");
         }
         setLoading(false);
       });
@@ -112,7 +111,6 @@ export default function LookbookPage() {
   return (
     <div className="-mt-4 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       <main className="w-full px-4 sm:px-6 lg:px-8 py-16">
-        {/* Page Header */}
         <div ref={lookbookHeaderRef} className="text-center max-w-2xl mx-auto mb-14 space-y-3 scroll-mt-24">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">Editorial 2026</span>
           <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-neutral-900">THE LOOKBOOK</h1>
@@ -121,7 +119,6 @@ export default function LookbookPage() {
           </p>
         </div>
 
-        {/* Category Tabs */}
         <div role="tablist" aria-label="Lookbook categories" className="flex justify-center items-center gap-6 sm:space-x-8 mb-12 text-xs uppercase tracking-widest font-medium">
           {['All', 'Women', 'Men'].map((tab) => {
             const isActive = activeTab.toLowerCase() === tab.toLowerCase();
@@ -157,30 +154,16 @@ export default function LookbookPage() {
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-14 px-6 bg-white border border-neutral-200 rounded-xs max-w-md mx-auto my-8 space-y-3">
-            <span className="text-[10px] uppercase tracking-widest text-red-500 font-semibold block">
-              Offline
-            </span>
-            <p className="text-xs font-semibold text-neutral-800">
-              {error}
-            </p>
-            <p className="text-[11px] text-neutral-500">
-              Backend server connect nahi ho raha. Server start karein aur retry karein.
-            </p>
-            <button
-              type="button"
-              onClick={fetchOutfits}
-              className="mt-2 px-4 py-2 bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors rounded-xs cursor-pointer"
-            >
-              Retry Connection
-            </button>
-          </div>
+          <ProductErrorState
+            title="Unable to Load Lookbook"
+            message="We couldn't load the outfits right now. Please check your connection and try again."
+            onRetry={fetchOutfits}
+          />
         ) : filteredOutfits.length === 0 ? (
           <div className="text-center py-20 text-neutral-500 text-xs uppercase tracking-widest">
             No outfits found.
           </div>
         ) : (
-          /* 6-Column Compact Grid */
           <div className="max-w-[1600px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
             {filteredOutfits.map((outfit) => {
               const currentQty = quantities[outfit.id] || 1;
@@ -190,7 +173,6 @@ export default function LookbookPage() {
                   key={outfit.id} 
                   className="group flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 hover:border-neutral-400 transition-all hover:shadow-xs text-left"
                 >
-                  {/* Compact Product Image */}
                   <div 
                     onClick={() => openQuickView(outfit)}
                     className="relative aspect-4/5 bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img"
@@ -206,7 +188,6 @@ export default function LookbookPage() {
                       {outfit.category}
                     </div>
 
-                    {/* Quick View Hover Button */}
                     <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-2">
                       <span className="bg-white/95 text-neutral-900 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-xs shadow-md flex items-center gap-1.5 hover:bg-neutral-900 hover:text-white transition-colors">
                         <Eye className="w-3 h-3" />
@@ -215,7 +196,6 @@ export default function LookbookPage() {
                     </div>
                   </div>
 
-                  {/* Product Info */}
                   <div className="mt-2.5 flex flex-col flex-1 justify-between space-y-1.5">
                     <div>
                       <h3 
@@ -233,7 +213,6 @@ export default function LookbookPage() {
                     </span>
                   </div>
 
-                  {/* Controls: Compact Quantity Stepper & Add to Cart */}
                   <div className="mt-2.5 pt-2 border-t border-neutral-100 flex flex-col gap-1.5">
                     <div className="flex items-center justify-between border border-neutral-200 rounded-xs bg-neutral-50 h-9 sm:h-10">
                       <button 

@@ -158,7 +158,6 @@ export default function PaymentTab({ user, setUser, showToast }) {
         </button>
       </div>
 
-      {/* Saved Methods List */}
       {!user.paymentMethods || user.paymentMethods.length === 0 ? (
         <div className="bg-neutral-50 border border-neutral-200 p-8 text-left rounded-sm space-y-2">
           <CreditCard className="w-8 h-8 text-neutral-400" />
@@ -241,7 +240,6 @@ export default function PaymentTab({ user, setUser, showToast }) {
         </div>
       )}
 
-      {/* Supported Gateways Reference */}
       <div className="pt-4 border-t border-neutral-100 space-y-3 text-left">
         <h3 className="text-xs font-bold uppercase tracking-widest text-neutral-700 text-left">
           Supported Checkout Gateways
@@ -278,7 +276,6 @@ export default function PaymentTab({ user, setUser, showToast }) {
         </div>
       </div>
 
-      {/* Add Payment Method Modal */}
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white max-w-md w-full p-6 sm:p-8 rounded-sm shadow-xl space-y-6 relative text-left">

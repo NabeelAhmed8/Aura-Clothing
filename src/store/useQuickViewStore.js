@@ -8,11 +8,9 @@ export const useQuickViewStore = create(
       product: null,
       wishlist: [],
 
-      // Open / Close Drawer
       openQuickView: (product) => set({ isOpen: true, product }),
       closeQuickView: () => set({ isOpen: false }),
 
-      // Wishlist toggle
       toggleWishlist: (productId) => {
         const current = get().wishlist;
         const exists = current.includes(productId);

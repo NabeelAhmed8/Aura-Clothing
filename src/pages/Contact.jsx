@@ -17,7 +17,6 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Page khulte hi smoothly top par scroll kare
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
   }, []);
@@ -27,7 +26,6 @@ export default function Contact() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Real MongoDB API Submit Call
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
@@ -63,13 +61,12 @@ export default function Contact() {
       }
     } catch (err) {
       console.error('Error submitting contact form:', err);
-      showToast('Connection error. Ensure backend server is running on port 5001.');
+      showToast('Connection error. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Universal Mail Handler: Mobile app + Desktop Web Gmail + Clipboard Fallback
   const handleEmailDispatch = (e) => {
     if (e) e.preventDefault();
     const targetEmail = 'concierge@aurastudio.com';
@@ -96,7 +93,6 @@ export default function Contact() {
     <div className="pt-2 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       <main className="w-full px-6 sm:px-12 lg:px-20 pt-6 pb-24 max-w-6xl mx-auto space-y-16">
         
-        {/* Page Header */}
         <section className="text-center max-w-3xl mx-auto space-y-4">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold block">
             Client Concierge & Atelier
@@ -109,10 +105,8 @@ export default function Contact() {
           </p>
         </section>
 
-        {/* Quick Channels Strip */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
           
-          {/* Direct WhatsApp Concierge */}
           <div className="group bg-white border border-neutral-200 p-6 rounded-sm hover:border-neutral-900 transition-colors duration-300 flex h-full flex-col items-center text-center">
             <a
               href="https://wa.me/923087300960?text=Hello%20AURA%2C%20I%20would%20like%20to%20inquire%20about%20my%20order."
@@ -144,7 +138,6 @@ export default function Contact() {
             </a>
           </div>
 
-          {/* Email Support */}
           <div className="group bg-white border border-neutral-200 p-6 rounded-sm hover:border-neutral-900 transition-colors duration-300 flex h-full flex-col items-center text-center">
             <button
               type="button"
@@ -174,7 +167,6 @@ export default function Contact() {
             </button>
           </div>
 
-          {/* Atelier Hours */}
           <div className="bg-white border border-neutral-200 p-6 rounded-sm flex h-full flex-col items-center text-center">
             <div className="flex flex-1 flex-col items-center space-y-3">
               <div className="w-9 h-9 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-900">
@@ -195,10 +187,8 @@ export default function Contact() {
 
         </section>
 
-        {/* Main Section: Form (Left) & Studio Details (Right) */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* Inquiry Form */}
           <div className="lg:col-span-7 bg-white border border-neutral-200 p-8 sm:p-10 rounded-sm">
             <div className="mb-8 space-y-1">
               <span className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold">Inquiry Form</span>
@@ -226,7 +216,6 @@ export default function Contact() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   
-                  {/* Name */}
                   <div className="space-y-2">
                     <label htmlFor="name" className="block text-[10px] uppercase tracking-widest font-bold text-neutral-700">
                       Full Name *
@@ -243,7 +232,6 @@ export default function Contact() {
                     />
                   </div>
 
-                  {/* Email */}
                   <div className="space-y-2">
                     <label htmlFor="email" className="block text-[10px] uppercase tracking-widest font-bold text-neutral-700">
                       Email Address *
@@ -264,7 +252,6 @@ export default function Contact() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   
-                  {/* Subject Dropdown */}
                   <div className="space-y-2">
                     <label htmlFor="subject" className="block text-[10px] uppercase tracking-widest font-bold text-neutral-700">
                       Topic / Department
@@ -284,7 +271,6 @@ export default function Contact() {
                     </select>
                   </div>
 
-                  {/* Order Number (Optional) */}
                   <div className="space-y-2">
                     <label htmlFor="orderNumber" className="block text-[10px] uppercase tracking-widest font-bold text-neutral-700">
                       Order Number (Optional)
@@ -302,7 +288,6 @@ export default function Contact() {
 
                 </div>
 
-                {/* Message */}
                 <div className="space-y-2">
                   <label htmlFor="message" className="block text-[10px] uppercase tracking-widest font-bold text-neutral-700">
                     Your Message *
@@ -319,7 +304,6 @@ export default function Contact() {
                   />
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -338,10 +322,8 @@ export default function Contact() {
             )}
           </div>
 
-          {/* Studio Presence & FAQs (Right Column) */}
           <div className="lg:col-span-5 space-y-8">
             
-            {/* Headquarters Card */}
             <div className="bg-white border border-neutral-200 p-8 rounded-sm space-y-6 text-center">
               <div className="space-y-2">
                 <span className="text-xs uppercase tracking-[0.2em] text-neutral-500 font-semibold">Physical Presence</span>
@@ -373,7 +355,6 @@ export default function Contact() {
               </div>
             </div>
 
-            {/* Quick Support FAQ Card */}
             <div className="bg-white border border-neutral-200 p-8 rounded-sm space-y-4 text-center">
               <div className="flex items-center justify-center space-x-2">
                 <HelpCircle className="w-4 h-4 text-neutral-900" />

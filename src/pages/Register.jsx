@@ -6,10 +6,6 @@ import OtpVerificationCard from '../components/auth/OtpVerificationCard';
 import RegisterForm from '../components/auth/RegisterForm';
 import AuthNoticeBanner from '../components/auth/AuthNoticeBanner';
 
-/**
- * Single Responsibility: Orchestrates registration page state, triggers API signup,
- * and toggles between RegisterForm and OtpVerificationCard.
- */
 export default function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -128,7 +124,6 @@ export default function Register() {
         </div>
       )}
 
-      {/* Bottom Switch to Sign In */}
       <div className="w-full max-w-md mx-auto text-center pt-4 border-t border-neutral-200 mt-4">
         <p className="text-xs text-neutral-600">
           Already have an account?{' '}

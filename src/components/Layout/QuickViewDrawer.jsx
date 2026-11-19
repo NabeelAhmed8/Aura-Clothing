@@ -41,7 +41,6 @@ export default function QuickViewDrawer() {
   const [openAccordion, setOpenAccordion] = useState(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
-  // Body overflow locking & Esc key
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -123,14 +122,12 @@ export default function QuickViewDrawer() {
         maxHeight: '100dvh',
       }}
     >
-      {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-300 select-none"
         onClick={closeQuickView}
         aria-hidden="true"
       />
 
-      {/* Slide-over Drawer Panel */}
       <div 
         className="fixed top-0 bottom-0 right-0 w-full sm:max-w-xl md:max-w-2xl flex flex-col bg-[#FDFDFD] shadow-2xl border-l border-neutral-200 z-10 overflow-hidden text-left select-text"
         style={{
@@ -138,7 +135,6 @@ export default function QuickViewDrawer() {
           maxHeight: '100dvh',
         }}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-neutral-200 bg-white/95 backdrop-blur-xs shrink-0 text-left">
           <div className="text-left">
             <span className="text-[10px] tracking-widest uppercase font-semibold text-neutral-500 block text-left">
@@ -159,10 +155,8 @@ export default function QuickViewDrawer() {
           </button>
         </div>
 
-        {/* Scrollable Body Content */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5 scrollbar-thin text-left">
           <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-start text-left">
-            {/* Left: Compact Image + Thumbnails */}
             <div className="sm:col-span-5 flex flex-col items-center sm:items-start space-y-2.5 text-left">
               <div className="relative aspect-3/4 w-48 sm:w-full max-h-56 sm:max-h-64 bg-neutral-100 rounded-xs overflow-hidden border border-neutral-200 group mx-auto sm:mx-0">
                 <img
@@ -173,7 +167,6 @@ export default function QuickViewDrawer() {
                   className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                 />
                 
-                {/* Category Badge & Out of Stock Badge */}
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
                   <div className="bg-neutral-900/85 backdrop-blur-xs text-white px-2 py-0.5 text-[9px] uppercase tracking-wider font-semibold rounded-xs">
                     {product.category || 'Luxury'}
@@ -185,7 +178,6 @@ export default function QuickViewDrawer() {
                   )}
                 </div>
 
-                {/* Wishlist Button */}
                 <button
                   type="button"
                   onClick={handleWishlistToggle}
@@ -200,7 +192,6 @@ export default function QuickViewDrawer() {
                 </button>
               </div>
 
-              {/* Thumbnails */}
               {thumbnails.length > 1 && (
                 <div className="flex items-center gap-2 overflow-x-auto justify-center sm:justify-start w-full pb-0.5">
                   {thumbnails.map((imgUrl, idx) => (
@@ -227,9 +218,7 @@ export default function QuickViewDrawer() {
               )}
             </div>
 
-            {/* Right: Pricing, Stock, Sizes, Colors & Overview */}
             <div className="sm:col-span-7 space-y-3.5 text-left">
-              {/* Pricing & Stock Status */}
               <div className="space-y-1 text-left pb-3 border-b border-neutral-100">
                 <div className="flex items-center justify-between text-left">
                   <div className="flex items-baseline gap-2 text-left">
@@ -265,7 +254,6 @@ export default function QuickViewDrawer() {
                 </p>
               </div>
 
-              {/* Sizes Selection */}
               <div className="space-y-1.5 text-left">
                 <div className="flex items-center justify-between text-xs text-left">
                   <span className="uppercase tracking-widest text-neutral-600 font-semibold text-[10px] text-left">
@@ -298,7 +286,6 @@ export default function QuickViewDrawer() {
                 </div>
               </div>
 
-              {/* Colors Swatches */}
               <div className="space-y-1.5 text-left">
                 <div className="flex items-center justify-between text-xs text-left">
                   <span className="uppercase tracking-widest text-neutral-600 font-semibold text-[10px] text-left">
@@ -325,7 +312,6 @@ export default function QuickViewDrawer() {
                 </div>
               </div>
 
-              {/* Short Description */}
               <div className="pt-2 border-t border-neutral-100 text-left">
                 <span className="text-[9px] uppercase tracking-widest text-neutral-400 font-bold block text-left mb-1">
                   Product Details
@@ -337,9 +323,7 @@ export default function QuickViewDrawer() {
             </div>
           </div>
 
-          {/* Collapsible Details, Care, Shipping & Customer Reviews */}
           <div className="border-t border-neutral-200 pt-1 space-y-1 text-left">
-            {/* Accordion 1: Material & Care */}
             <div className="border-b border-neutral-100 text-left">
               <button
                 type="button"
@@ -365,7 +349,6 @@ export default function QuickViewDrawer() {
               )}
             </div>
 
-            {/* Accordion 2: Delivery & Returns */}
             <div className="border-b border-neutral-100 text-left">
               <button
                 type="button"
@@ -391,7 +374,6 @@ export default function QuickViewDrawer() {
               )}
             </div>
 
-            {/* Accordion 3: Customer Reviews */}
             <QuickViewReviews
               productId={productId}
               isOpen={isOpen}
@@ -401,7 +383,6 @@ export default function QuickViewDrawer() {
             />
           </div>
 
-          {/* Trust Highlights Strip */}
           <div className="grid grid-cols-3 gap-2 pt-1 text-left">
             <div className="p-2 bg-neutral-50 rounded-xs flex items-center gap-2 text-left border border-neutral-200/60">
               <Truck className="w-3.5 h-3.5 text-neutral-700 shrink-0" />
@@ -427,10 +408,8 @@ export default function QuickViewDrawer() {
           </div>
         </div>
 
-        {/* Call to Action (Fixed Bottom Bar) */}
         <div className="px-5 py-3.5 border-t border-neutral-200 bg-white shadow-lg space-y-2.5 shrink-0 text-left">
           <div className="flex items-center gap-2.5">
-            {/* Quantity Stepper */}
             <div className={`flex items-center justify-between border border-neutral-300 rounded-xs bg-neutral-50 h-9.5 w-26 shrink-0 ${isOutOfStock ? 'opacity-40 cursor-not-allowed' : ''}`}>
               <button
                 type="button"
@@ -455,7 +434,6 @@ export default function QuickViewDrawer() {
               </button>
             </div>
 
-            {/* Wishlist Button */}
             <button
               type="button"
               onClick={handleWishlistToggle}
@@ -469,7 +447,6 @@ export default function QuickViewDrawer() {
               <Heart className={`w-4 h-4 ${isFavorited ? 'fill-red-500' : ''}`} />
             </button>
 
-            {/* Primary Add to Cart Button */}
             <button
               type="button"
               disabled={isOutOfStock}
@@ -485,7 +462,6 @@ export default function QuickViewDrawer() {
             </button>
           </div>
 
-          {/* Buy Now / Direct Checkout Button */}
           <button
             type="button"
             disabled={isOutOfStock}
@@ -501,7 +477,6 @@ export default function QuickViewDrawer() {
         </div>
       </div>
 
-      {/* Atelier Size Guide Modal */}
       <SizeGuideModal isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
     </div>
   );

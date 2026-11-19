@@ -1,28 +1,29 @@
 export default function ProductErrorState({
-  error,
+  title = 'Unable to Load Items',
+  message = "We couldn't load the products right now. Please check your connection and try again.",
   onRetry,
-  message = 'Backend server connect nahi ho raha. Server start karein aur retry karein.',
 }) {
   return (
-    <div className="text-center py-14 px-6 bg-white border border-neutral-200 rounded-xs max-w-md mx-auto my-8 space-y-3">
-      <span className="text-[10px] uppercase tracking-widest text-red-500 font-semibold block">
-        Offline
-      </span>
-      <p className="text-xs font-semibold text-neutral-800">
-        {error}
-      </p>
-      <p className="text-[11px] text-neutral-500">
-        {message}
-      </p>
-      {onRetry && (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-2 px-4 py-2 bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors rounded-xs cursor-pointer"
-        >
-          Retry Connection
-        </button>
-      )}
+    <div className="w-full flex items-center justify-center py-12 px-4">
+      <div className="w-full max-w-md mx-auto bg-white border border-neutral-200 rounded-xs p-8 sm:p-10 flex flex-col items-center justify-center text-center space-y-3 shadow-xs">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-900 text-center w-full">
+          {title}
+        </h3>
+        <p className="text-xs text-neutral-500 leading-relaxed text-center max-w-sm mx-auto">
+          {message}
+        </p>
+        {onRetry && (
+          <div className="pt-2 w-full flex items-center justify-center">
+            <button
+              type="button"
+              onClick={onRetry}
+              className="px-6 py-2.5 bg-neutral-900 text-white text-[10px] uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors rounded-xs cursor-pointer inline-flex items-center justify-center"
+            >
+              Try Again
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

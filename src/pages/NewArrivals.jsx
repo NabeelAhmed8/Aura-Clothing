@@ -47,7 +47,6 @@ export default function NewArrivals() {
   return (
     <div className="-mt-4 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
       <main className="w-full px-4 sm:px-6 lg:px-10 py-16">
-        {/* Page Header */}
         <div ref={newArrivalsHeaderRef} className="text-center max-w-2xl mx-auto mb-14 space-y-3 scroll-mt-24">
           <span className="text-xs uppercase tracking-widest text-neutral-500 font-semibold">Collection 2026</span>
           <h1 className="text-3xl sm:text-5xl font-light tracking-tight text-neutral-900">NEW ARRIVALS</h1>
@@ -56,7 +55,6 @@ export default function NewArrivals() {
           </p>
         </div>
 
-        {/* Category Filters */}
         <div
           role="tablist"
           aria-label="New arrival categories"
@@ -83,14 +81,13 @@ export default function NewArrivals() {
           })}
         </div>
 
-        {/* Products Grid / States */}
         {loading ? (
           <ProductSkeletonGrid count={12} aspectRatio="aspect-4/5" />
         ) : error ? (
           <ProductErrorState
-            error={error}
+            title="Unable to Load New Arrivals"
+            message="We couldn't load new arrivals right now. Please check your connection and try again."
             onRetry={refetch}
-            message="Backend server connect nahi ho raha. Server start karein aur retry karein."
           />
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-20 text-neutral-500 text-xs uppercase tracking-widest">
@@ -104,7 +101,6 @@ export default function NewArrivals() {
               ))}
             </div>
 
-            {/* Load More Button */}
             {visibleCount < filteredProducts.length && (
               <div className="text-center mt-12 mb-4">
                 <button

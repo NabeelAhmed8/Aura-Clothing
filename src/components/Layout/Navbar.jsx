@@ -81,7 +81,6 @@ export default function Navbar() {
     <header className="fixed top-0 z-50 bg-[#F9F9F8] border-b border-neutral-200 w-full select-none">
       <div className="w-full px-6 sm:px-8 h-20 flex items-center justify-between relative z-50 bg-[#F9F9F8]">
         
-        {/* Mobile Menu Trigger Button */}
         <button 
           type="button"
           onClick={() => {
@@ -94,7 +93,6 @@ export default function Navbar() {
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Brand Logo */}
         <Link 
           to="/" 
           onClick={handleLogoClick}
@@ -103,7 +101,6 @@ export default function Navbar() {
           AURA
         </Link>
 
-        {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center space-x-7 lg:space-x-8 text-xs tracking-widest uppercase font-medium text-neutral-800">
           <Link 
             to="/new-arrivals" 
@@ -138,7 +135,6 @@ export default function Navbar() {
           </Link>
         </nav>
 
-        {/* Action Icons */}
         <div className="flex items-center space-x-4 sm:space-x-6 text-neutral-900 z-50">
           <button 
             type="button"
@@ -152,7 +148,6 @@ export default function Navbar() {
             <Search className="w-5 h-5" />
           </button>
 
-          {/* Desktop User Icon: ?tab=profile query ke sath taake active tab hamesha profile par reset ho */}
           <Link 
             to={user ? "/profile?tab=profile" : "/login"}
             aria-label="Account" 
@@ -178,13 +173,11 @@ export default function Navbar() {
 
       </div>
 
-      {/* Expandable Search Bar Drawer */}
       {isSearchOpen && (
   <div className="absolute top-20 inset-x-0 bg-white border-b border-neutral-200 px-6 sm:px-8 py-6 shadow-md z-40">
     <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto flex items-center space-x-4">
       <Search className="w-5 h-5 text-neutral-400 shrink-0" />
       
-      {/* Screen-reader aur accessibility ke liye label */}
       <label htmlFor="site-search" className="sr-only">Search Catalog</label>
       
       <input 
@@ -208,7 +201,6 @@ export default function Navbar() {
   </div>
 )}
 
-      {/* Mobile Navigation Dropdown Menu */}
       {isMobileMenuOpen && (
         <div className="md:hidden absolute top-20 inset-x-0 bg-[#F9F9F8] border-b border-neutral-200 px-6 py-8 shadow-xl z-45 space-y-6">
           <nav className="flex flex-col space-y-4 text-xs tracking-widest uppercase font-medium text-neutral-900">
@@ -249,7 +241,6 @@ export default function Navbar() {
             </Link>
           </nav>
 
-          {/* Mobile Auth Buttons */}
           {user ? (
             <div className="pt-2 border-t border-neutral-200 flex flex-col gap-3">
               <div className="flex items-center gap-2 px-1 text-xs text-neutral-600">
