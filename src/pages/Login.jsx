@@ -7,6 +7,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { API_BASE_URL } from '../config/api';
 import OtpVerificationCard from '../components/auth/OtpVerificationCard';
+import ForgotPasswordCard from '../components/auth/ForgotPasswordCard';
 import AuthNoticeBanner from '../components/auth/AuthNoticeBanner';
 
 export default function Login() {
@@ -20,6 +21,8 @@ export default function Login() {
 
   const [serverError, setServerError] = useState('');
   const [showOtpCard, setShowOtpCard] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetSuccessMessage, setResetSuccessMessage] = useState('');
   const [otpCardTitle, setOtpCardTitle] = useState('Sign-In Verification');
   const [otpCardSubtitle, setOtpCardSubtitle] = useState('We sent a 6-digit code to:');
   const [loginEmail, setLoginEmail] = useState(emailParam);
@@ -53,18 +56,9 @@ export default function Login() {
       if (result.requiresVerification || result.verificationRequired) {
         setLoginEmail(data.email);
         setOtpCardTitle('Verify Your Email');
-        setOtpCardSubtitle('Please verify your email address. We sent a 6-digit code to:');
+        setOtpCardSubtitle('Please enter the 6-digit verification code sent during registration to:');
         setShowOtpCard(true);
         showToast(result.message || 'Please verify your email address before logging in.');
-        return;
-      }
-
-      if (result.requiresLoginOtp || result.requiresOtp) {
-        setLoginEmail(data.email);
-        setOtpCardTitle('Sign-In Verification');
-        setOtpCardSubtitle('A sign-in code was sent to your email. Enter the 6-digit code:');
-        setShowOtpCard(true);
-        showToast('6-digit sign-in code sent to your email.');
         return;
       }
 
@@ -96,7 +90,19 @@ export default function Login() {
 
   return (
     <div className="flex-1 w-full bg-[#F9F9F8] flex flex-col justify-center items-center py-6 sm:py-12 px-4 sm:px-6">
-      {showOtpCard ? (
+      {showForgotPassword ? (
+        <ForgotPasswordCard
+          initialEmail={emailParam || loginEmail}
+          onSuccess={(email) => {
+            setShowForgotPassword(false);
+            setResetSuccessMessage('Password reset successfully! Please sign in with your new password.');
+            if (email) {
+              setLoginEmail(email);
+            }
+          }}
+          onBack={() => setShowForgotPassword(false)}
+        />
+      ) : showOtpCard ? (
         <OtpVerificationCard
           email={loginEmail}
           title={otpCardTitle}
@@ -117,6 +123,13 @@ export default function Login() {
             <h1 className="text-2xl font-black tracking-widest text-neutral-900">AURA</h1>
             <p className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Sign in to your account</p>
           </div>
+
+          {resetSuccessMessage && (
+            <AuthNoticeBanner
+              variant="success"
+              message={resetSuccessMessage}
+            />
+          )}
 
           {isVerifiedParam && (
             <AuthNoticeBanner
@@ -161,9 +174,22 @@ export default function Login() {
             </div>
 
             <div className="space-y-1 text-left relative">
-              <label htmlFor="password" className="block text-left text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium mb-1">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label htmlFor="password" className="text-[11px] sm:text-xs uppercase tracking-widest text-neutral-700 font-medium">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setServerError('');
+                    setResetSuccessMessage('');
+                    setShowForgotPassword(true);
+                  }}
+                  className="text-[10px] text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer uppercase tracking-wider font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <div className="relative">
                 <input
                   id="password"
@@ -199,15 +225,31 @@ export default function Login() {
       )}
 
       <div className="w-full max-w-md mx-auto text-center pt-4 border-t border-neutral-200 mt-4">
-        <p className="text-xs text-neutral-600">
-          Don't have an account?{' '}
-          <Link
-            to={`/register?redirect=${encodeURIComponent(redirectPath)}${emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''}`}
-            className="text-neutral-900 font-bold hover:underline ml-1"
-          >
-            Create Account
-          </Link>
-        </p>
+        {showForgotPassword ? (
+          <p className="text-xs text-neutral-600">
+            Remember your password?{' '}
+            <button
+              type="button"
+              onClick={() => {
+                setServerError('');
+                setShowForgotPassword(false);
+              }}
+              className="text-neutral-900 font-bold hover:underline ml-1 cursor-pointer"
+            >
+              Sign In
+            </button>
+          </p>
+        ) : (
+          <p className="text-xs text-neutral-600">
+            Don't have an account?{' '}
+            <Link
+              to={`/register?redirect=${encodeURIComponent(redirectPath)}${emailParam ? `&email=${encodeURIComponent(emailParam)}` : ''}`}
+              className="text-neutral-900 font-bold hover:underline ml-1"
+            >
+              Create Account
+            </Link>
+          </p>
+        )}
       </div>
 
       <div className="text-center text-[10px] text-neutral-400 uppercase tracking-widest mt-2">
