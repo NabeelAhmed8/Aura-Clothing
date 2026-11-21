@@ -1,19 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
 import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/ui/ProductCard';
 import ProductSkeletonGrid from '../components/ui/ProductSkeletonGrid';
 import ProductErrorState from '../components/ui/ProductErrorState';
+import Pagination from '../components/ui/Pagination';
 
 const CATEGORIES = ['All', 'Men', 'Women', 'Accessories'];
+const ITEMS_PER_PAGE = 12;
 
 export default function NewArrivals() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [visibleCount, setVisibleCount] = useState(12);
   const newArrivalsHeaderRef = useRef(null);
 
   const selectedCategory = searchParams.get('category') || 'All';
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const rawPage = !isNaN(pageParam) && pageParam > 0 ? pageParam : 1;
 
   const { products, loading, error, refetch } = useProducts({
     endpoint: '/api/products/new-arrivals',
@@ -28,9 +30,47 @@ export default function NewArrivals() {
     });
   }, [selectedCategory]);
 
-  const handleCategoryChange = (cat) => {
-    setVisibleCount(12);
+  const filteredProducts = products.filter((p) => {
+    if (selectedCategory.toLowerCase() === 'all') return true;
+    return p.category?.toLowerCase() === selectedCategory.toLowerCase();
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
+  const currentPage = Math.min(rawPage, totalPages);
+
+  // If URL page exceeds available pages after filtering, correct it
+  useEffect(() => {
+    if (rawPage > totalPages && totalPages > 0) {
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('page');
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [rawPage, totalPages, searchParams, setSearchParams]);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentProducts = filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
+
     const nextParams = new URLSearchParams(searchParams);
+    if (newPage === 1) {
+      nextParams.delete('page');
+    } else {
+      nextParams.set('page', newPage.toString());
+    }
+    setSearchParams(nextParams);
+
+    if (newArrivalsHeaderRef.current) {
+      newArrivalsHeaderRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleCategoryChange = (cat) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('page'); // Reset to page 1 on category change
     if (cat === 'All') {
       nextParams.delete('category');
     } else {
@@ -38,11 +78,6 @@ export default function NewArrivals() {
     }
     setSearchParams(nextParams);
   };
-
-  const filteredProducts = products.filter((p) => {
-    if (selectedCategory.toLowerCase() === 'all') return true;
-    return p.category?.toLowerCase() === selectedCategory.toLowerCase();
-  });
 
   return (
     <div className="-mt-4 bg-[#F9F9F8] flex-1 flex flex-col text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
@@ -96,23 +131,19 @@ export default function NewArrivals() {
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
-              {filteredProducts.slice(0, visibleCount).map((product) => (
+              {currentProducts.map((product) => (
                 <ProductCard key={product.id} product={product} aspectRatio="aspect-4/5" badgeStyle="floating" />
               ))}
             </div>
 
-            {visibleCount < filteredProducts.length && (
-              <div className="text-center mt-12 mb-4">
-                <button
-                  type="button"
-                  onClick={() => setVisibleCount((prev) => prev + 12)}
-                  className="px-8 py-3.5 border border-neutral-900 bg-white text-neutral-900 text-xs uppercase tracking-widest font-bold hover:bg-neutral-900 hover:text-white transition-all rounded-xs cursor-pointer inline-flex items-center space-x-2 shadow-xs"
-                >
-                  <span>Load More Products ({filteredProducts.length - visibleCount} remaining)</span>
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            )}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredProducts.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={handlePageChange}
+              className="mt-14"
+            />
           </>
         )}
       </main>

@@ -1,23 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useQuickViewStore } from '../store/useQuickViewStore';
 import { Eye } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 import LazyImage from '../components/ui/LazyImage';
 import ProductErrorState from '../components/ui/ProductErrorState';
+import Pagination from '../components/ui/Pagination';
 import { getCachedData, setCachedData } from '../utils/productCache';
+
+const ITEMS_PER_PAGE = 12;
 
 export default function LookbookPage() {
   const addToCart = useCartStore((state) => state.addToCart);
   const openQuickView = useQuickViewStore((state) => state.openQuickView);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [outfits, setOutfits] = useState([]);
-  const [activeTab, setActiveTab] = useState('All');
   const [quantities, setQuantities] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const lookbookHeaderRef = useRef(null);
+
+  const activeTab = searchParams.get('tab') || 'All';
+  const pageParam = parseInt(searchParams.get('page') || '1', 10);
+  const rawPage = !isNaN(pageParam) && pageParam > 0 ? pageParam : 1;
 
   useEffect(() => {
     window.scrollTo({
@@ -104,9 +112,53 @@ export default function LookbookPage() {
     addToCart(outfit, qty);
   };
 
-  const filteredOutfits = activeTab === 'All' 
+  const filteredOutfits = activeTab.toLowerCase() === 'all' 
     ? outfits 
-    : outfits.filter(item => item.category.toLowerCase() === activeTab.toLowerCase());
+    : outfits.filter(item => item.category?.toLowerCase() === activeTab.toLowerCase());
+
+  const totalPages = Math.max(1, Math.ceil(filteredOutfits.length / ITEMS_PER_PAGE));
+  const currentPage = Math.min(rawPage, totalPages);
+
+  // If URL page exceeds available pages after tab switch, correct it
+  useEffect(() => {
+    if (rawPage > totalPages && totalPages > 0) {
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('page');
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [rawPage, totalPages, searchParams, setSearchParams]);
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentOutfits = filteredOutfits.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages || newPage === currentPage) return;
+
+    const nextParams = new URLSearchParams(searchParams);
+    if (newPage === 1) {
+      nextParams.delete('page');
+    } else {
+      nextParams.set('page', newPage.toString());
+    }
+    setSearchParams(nextParams);
+
+    if (lookbookHeaderRef.current) {
+      lookbookHeaderRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleTabChange = (tab) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('page'); // Reset to page 1 on tab change
+    if (tab === 'All') {
+      nextParams.delete('tab');
+    } else {
+      nextParams.set('tab', tab);
+    }
+    setSearchParams(nextParams);
+  };
 
   return (
     <div className="-mt-4 bg-[#F9F9F8] min-h-screen text-neutral-900 font-sans selection:bg-neutral-900 selection:text-white relative w-full overflow-x-hidden">
@@ -128,7 +180,7 @@ export default function LookbookPage() {
                 type="button"
                 role="tab"
                 aria-selected={isActive}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => handleTabChange(tab)}
                 className={`pb-1 transition-colors cursor-pointer ${
                   isActive
                     ? 'text-neutral-900 border-b-2 border-neutral-900 font-bold -mb-px' 
@@ -164,90 +216,101 @@ export default function LookbookPage() {
             No outfits found.
           </div>
         ) : (
-          <div className="max-w-[1600px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
-            {filteredOutfits.map((outfit) => {
-              const currentQty = quantities[outfit.id] || 1;
+          <>
+            <div className="max-w-[1600px] mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6 gap-3.5">
+              {currentOutfits.map((outfit) => {
+                const currentQty = quantities[outfit.id] || 1;
 
-              return (
-                <div 
-                  key={outfit.id} 
-                  className="group flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 hover:border-neutral-400 transition-all hover:shadow-xs text-left"
-                >
+                return (
                   <div 
-                    onClick={() => openQuickView(outfit)}
-                    className="relative aspect-4/5 bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img"
+                    key={outfit.id} 
+                    className="group flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 hover:border-neutral-400 transition-all hover:shadow-xs text-left"
                   >
-                    <LazyImage 
-                      src={outfit.image} 
-                      alt={outfit.name} 
-                      aspectRatio="aspect-4/5"
-                      targetWidth={500}
-                      className="transition-transform duration-500 group-hover:scale-105" 
-                    />
-                    <div className="absolute top-2 left-2 bg-neutral-900/80 backdrop-blur-xs text-white px-2 py-0.5 text-[9px] uppercase tracking-wider font-semibold rounded-xs">
-                      {outfit.category}
-                    </div>
-
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-2">
-                      <span className="bg-white/95 text-neutral-900 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-xs shadow-md flex items-center gap-1.5 hover:bg-neutral-900 hover:text-white transition-colors">
-                        <Eye className="w-3 h-3" />
-                        Quick View
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-2.5 flex flex-col flex-1 justify-between space-y-1.5">
-                    <div>
-                      <h3 
-                        onClick={() => openQuickView(outfit)}
-                        className="text-xs font-medium text-neutral-900 line-clamp-2 leading-snug min-h-8 cursor-pointer hover:underline"
-                      >
-                        {outfit.name}
-                      </h3>
-                      <p className="text-[10px] text-neutral-400 font-light mt-0.5 line-clamp-1">
-                        {outfit.description}
-                      </p>
-                    </div>
-                    <span className="text-xs font-semibold text-neutral-900 pt-0.5">
-                      ${outfit.price}
-                    </span>
-                  </div>
-
-                  <div className="mt-2.5 pt-2 border-t border-neutral-100 flex flex-col gap-1.5">
-                    <div className="flex items-center justify-between border border-neutral-200 rounded-xs bg-neutral-50 h-9 sm:h-10">
-                      <button 
-                        type="button" 
-                        aria-label={`Decrease quantity for ${outfit.name}`}
-                        onClick={() => handleQuantityChange(outfit.id, -1)}
-                        className="w-8 sm:w-9 h-full flex items-center justify-center text-xs font-bold text-neutral-600 hover:bg-neutral-200 transition-colors cursor-pointer"
-                      >
-                        −
-                      </button>
-                      <span className="text-xs font-semibold text-neutral-900">
-                        {currentQty}
-                      </span>
-                      <button 
-                        type="button" 
-                        aria-label={`Increase quantity for ${outfit.name}`}
-                        onClick={() => handleQuantityChange(outfit.id, 1)}
-                        className="w-8 sm:w-9 h-full flex items-center justify-center text-xs font-bold text-neutral-600 hover:bg-neutral-200 transition-colors cursor-pointer"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <button 
-                      type="button" 
-                      onClick={() => handleAddToCart(outfit)} 
-                      className="w-full bg-neutral-900 text-white h-9 sm:h-10 py-2.5 px-4 text-[10px] sm:text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer rounded-xs flex items-center justify-center text-center"
+                    <div 
+                      onClick={() => openQuickView(outfit)}
+                      className="relative aspect-4/5 bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img"
                     >
-                      Add To Cart
-                    </button>
+                      <LazyImage 
+                        src={outfit.image} 
+                        alt={outfit.name} 
+                        aspectRatio="aspect-4/5"
+                        targetWidth={500}
+                        className="transition-transform duration-500 group-hover:scale-105" 
+                      />
+                      <div className="absolute top-2 left-2 bg-neutral-900/80 backdrop-blur-xs text-white px-2 py-0.5 text-[9px] uppercase tracking-wider font-semibold rounded-xs">
+                        {outfit.category}
+                      </div>
+
+                      <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-2">
+                        <span className="bg-white/95 text-neutral-900 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-xs shadow-md flex items-center gap-1.5 hover:bg-neutral-900 hover:text-white transition-colors">
+                          <Eye className="w-3 h-3" />
+                          Quick View
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-2.5 flex flex-col flex-1 justify-between space-y-1.5">
+                      <div>
+                        <h3 
+                          onClick={() => openQuickView(outfit)}
+                          className="text-xs font-medium text-neutral-900 line-clamp-2 leading-snug min-h-8 cursor-pointer hover:underline"
+                        >
+                          {outfit.name}
+                        </h3>
+                        <p className="text-[10px] text-neutral-400 font-light mt-0.5 line-clamp-1">
+                          {outfit.description}
+                        </p>
+                      </div>
+                      <span className="text-xs font-semibold text-neutral-900 pt-0.5">
+                        ${outfit.price}
+                      </span>
+                    </div>
+
+                    <div className="mt-2.5 pt-2 border-t border-neutral-100 flex flex-col gap-1.5">
+                      <div className="flex items-center justify-between border border-neutral-200 rounded-xs bg-neutral-50 h-9 sm:h-10">
+                        <button 
+                          type="button" 
+                          aria-label={`Decrease quantity for ${outfit.name}`}
+                          onClick={() => handleQuantityChange(outfit.id, -1)}
+                          className="w-8 sm:w-9 h-full flex items-center justify-center text-xs font-bold text-neutral-600 hover:bg-neutral-200 transition-colors cursor-pointer"
+                        >
+                          −
+                        </button>
+                        <span className="text-xs font-semibold text-neutral-900">
+                          {currentQty}
+                        </span>
+                        <button 
+                          type="button" 
+                          aria-label={`Increase quantity for ${outfit.name}`}
+                          onClick={() => handleQuantityChange(outfit.id, 1)}
+                          className="w-8 sm:w-9 h-full flex items-center justify-center text-xs font-bold text-neutral-600 hover:bg-neutral-200 transition-colors cursor-pointer"
+                        >
+                          +
+                        </button>
+                      </div>
+
+                      <button 
+                        type="button" 
+                        onClick={() => handleAddToCart(outfit)} 
+                        className="w-full bg-neutral-900 text-white h-9 sm:h-10 py-2.5 px-4 text-[10px] sm:text-xs uppercase tracking-widest font-bold hover:bg-neutral-800 transition-colors cursor-pointer rounded-xs flex items-center justify-center text-center"
+                      >
+                        Add To Cart
+                      </button>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredOutfits.length}
+              itemsPerPage={ITEMS_PER_PAGE}
+              onPageChange={handlePageChange}
+              className="mt-14 max-w-[1600px] mx-auto"
+            />
+          </>
         )}
       </main>
     </div>
