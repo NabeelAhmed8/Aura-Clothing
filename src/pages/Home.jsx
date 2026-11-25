@@ -5,7 +5,7 @@ import Lookbook from '../components/sections/Lookbook';
 
 export default function Home() {
   return (
-    <div className="w-full flex-1 flex flex-col">
+    <div className="w-full flex-1 flex flex-col overflow-x-clip">
       <Hero />
       <BrandValues />
       <ProductGrid />

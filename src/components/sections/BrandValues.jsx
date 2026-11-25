@@ -9,14 +9,14 @@ export default function BrandValues() {
   ];
 
   return (
-    <section className="w-full border-y border-neutral-200 py-12 bg-[#F9F9F8]">
-      <div className="w-full px-6 sm:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+    <section className="w-full border-y border-neutral-200 py-8 sm:py-12 bg-[#F9F9F8]">
+      <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-8 lg:px-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-6 sm:gap-6 lg:gap-8">
           {values.map((item, index) => (
-            <div key={index} className="flex flex-col items-center text-center space-y-3 p-4">
-              <div className="p-3 bg-neutral-100 rounded-full">{item.icon}</div>
-              <h3 className="text-xs uppercase tracking-widest font-bold text-neutral-900">{item.title}</h3>
-              <p className="text-xs text-neutral-600 font-light leading-relaxed">{item.description}</p>
+            <div key={index} className="flex flex-col items-center text-center space-y-2 sm:space-y-3 p-2 sm:p-4">
+              <div className="p-2.5 sm:p-3 bg-neutral-100 rounded-full">{item.icon}</div>
+              <h3 className="text-[11px] sm:text-xs uppercase tracking-wider sm:tracking-widest font-bold text-neutral-900">{item.title}</h3>
+              <p className="text-[11px] sm:text-xs text-neutral-600 font-light leading-relaxed max-w-[26ch]">{item.description}</p>
             </div>
           ))}
         </div>

@@ -33,7 +33,7 @@ export default function ProductCard({
   };
 
   return (
-    <div className="group relative flex flex-col bg-white p-2.5 rounded-sm border border-neutral-200 hover:border-neutral-400 transition-all hover:shadow-xs text-left">
+    <div className="group relative flex flex-col bg-white p-2 sm:p-2.5 rounded-sm border border-neutral-200 hover:border-neutral-400 transition-all hover:shadow-xs text-left">
       <div
         onClick={() => openQuickView(product)}
         className={`relative ${aspectRatio} bg-neutral-100 overflow-hidden rounded-xs cursor-pointer group/img`}
@@ -130,7 +130,7 @@ export default function ProductCard({
           type="button"
           disabled={isOutOfStock}
           onClick={handleAddToCart}
-          className={`w-full h-9 sm:h-10 py-2.5 px-4 text-[10px] sm:text-xs uppercase tracking-widest font-bold transition-colors rounded-xs flex items-center justify-center text-center ${
+          className={`w-full h-9 sm:h-10 py-2.5 px-2 sm:px-4 text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest font-bold transition-colors rounded-xs flex items-center justify-center text-center whitespace-nowrap ${
             isOutOfStock
               ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
               : 'bg-neutral-900 text-white hover:bg-neutral-800 cursor-pointer'
